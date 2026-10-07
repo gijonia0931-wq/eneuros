@@ -1,0 +1,19 @@
+---
+import Base from '../layouts/Base.astro';
+import NewsletterBox from './NewsletterBox.astro';
+interface Props { title: string; description: string; date: Date; updated?: Date }
+const { title, description, date, updated } = Astro.props;
+const fmt = new Intl.DateTimeFormat('es-ES', { dateStyle: 'long' });
+---
+<Base title={title} description={description}>
+  <article class="prose">
+    <h1>{title}</h1>
+    <p class="lead">{description}</p>
+    <p style="color:var(--muted);font-size:.9rem">
+      Publicado el <time datetime={date.toISOString()}>{fmt.format(date)}</time>
+      {updated && <> · Actualizado el <time datetime={updated.toISOString()}>{fmt.format(updated)}</time></>}
+    </p>
+    <slot />
+  </article>
+  <div class="section"><NewsletterBox /></div>
+</Base>

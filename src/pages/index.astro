@@ -1,0 +1,40 @@
+---
+import Base from '../layouts/Base.astro';
+import NewsletterBox from '../components/NewsletterBox.astro';
+import ArticleList from '../components/ArticleList.astro';
+import { SITE, CALCULADORAS, DATOS } from '../site';
+import { publicados } from '../lib';
+const actualidad = (await publicados('actualidad')).slice(0, 5);
+---
+<Base>
+  <section class="hero">
+    <div class="kicker">{SITE.tagline}</div>
+    <h1>Tu dinero, con números claros</h1>
+    <p class="lead">Calculadoras sencillas, datos oficiales actualizados y noticias económicas explicadas para que sepas cómo afectan a tu bolsillo.</p>
+  </section>
+
+  <section class="section">
+    <div class="section-head"><h2>Calculadoras</h2><a href="/calculadoras/">Ver todas</a></div>
+    <div class="grid">
+      {CALCULADORAS.slice(0, 3).map((c) => (
+        <div class="card"><span class="badge">Próximamente</span><h3>{c.title}</h3><p>{c.desc}</p></div>
+      ))}
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head"><h2>Datos al día</h2><a href="/datos/">Ver todos</a></div>
+    <div class="grid">
+      {DATOS.map((d) => (
+        <div class="card"><span class="badge">Próximamente</span><h3>{d.title}</h3><p>{d.desc}</p></div>
+      ))}
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head"><h2>Actualidad explicada</h2><a href="/actualidad/">Ver todo</a></div>
+    <ArticleList items={actualidad} base="/actualidad/" empty="Pronto publicaremos las primeras noticias explicadas." />
+  </section>
+
+  <section class="section"><NewsletterBox /></section>
+</Base>

@@ -1,0 +1,13 @@
+---
+import Base from '../../layouts/Base.astro';
+import { DATOS } from '../../site';
+---
+<Base title="Datos al día" description="Precio de la luz, Euríbor, IPC y gasolina en España, actualizados con datos oficiales.">
+  <h1>Datos al día</h1>
+  <p class="lead">Los indicadores que mueven tu economía, con gráficos que se actualizan solos a partir de fuentes oficiales.</p>
+  <div class="grid section">
+    {DATOS.map((d) => (
+      <div class="card"><span class="badge">Próximamente</span><h3>{d.title}</h3><p>{d.desc}</p></div>
+    ))}
+  </div>
+</Base>

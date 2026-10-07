@@ -1,0 +1,11 @@
+---
+import Base from '../../layouts/Base.astro';
+import ArticleList from '../../components/ArticleList.astro';
+import { publicados } from '../../lib';
+const items = await publicados('guias');
+---
+<Base title="Guías" description="Guías claras sobre hipotecas, impuestos, ahorro, alquiler y facturas en España.">
+  <h1>Guías</h1>
+  <p class="lead">Guías claras sobre hipotecas, impuestos, ahorro, alquiler y facturas en España.</p>
+  <div class="section"><ArticleList items={items} base="/guias/" empty="Pronto publicaremos las primeras guías." /></div>
+</Base>

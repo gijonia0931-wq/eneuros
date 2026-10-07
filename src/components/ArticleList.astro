@@ -1,0 +1,22 @@
+---
+interface Props {
+  items: { id: string; data: { title: string; description: string; date: Date } }[];
+  base: string;
+  empty: string;
+}
+const { items, base, empty } = Astro.props;
+const fmt = new Intl.DateTimeFormat('es-ES', { dateStyle: 'long' });
+---
+{items.length === 0 ? (
+  <p class="empty">{empty}</p>
+) : (
+  <ul class="list">
+    {items.map((a) => (
+      <li>
+        <time datetime={a.data.date.toISOString()}>{fmt.format(a.data.date)}</time>
+        <a href={`${base}${a.id}/`}>{a.data.title}</a>
+        <p>{a.data.description}</p>
+      </li>
+    ))}
+  </ul>
+)}

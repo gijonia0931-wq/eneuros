@@ -1,0 +1,13 @@
+---
+import Base from '../../layouts/Base.astro';
+import { CALCULADORAS } from '../../site';
+---
+<Base title="Calculadoras" description="Calculadoras de hipoteca, Euríbor, sueldo neto, alquiler, luz e interés compuesto para España.">
+  <h1>Calculadoras</h1>
+  <p class="lead">Herramientas gratuitas para hacer tus cuentas en segundos, con los datos oficiales más recientes.</p>
+  <div class="grid section">
+    {CALCULADORAS.map((c) => (
+      <div class="card"><span class="badge">Próximamente</span><h3>{c.title}</h3><p>{c.desc}</p></div>
+    ))}
+  </div>
+</Base>

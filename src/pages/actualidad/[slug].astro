@@ -1,0 +1,13 @@
+---
+import ArticlePage from '../../components/ArticlePage.astro';
+import { render } from 'astro:content';
+import { publicados } from '../../lib';
+
+export async function getStaticPaths() {
+  const items = await publicados('actualidad');
+  return items.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+---
+<ArticlePage {...entry.data}><Content /></ArticlePage>

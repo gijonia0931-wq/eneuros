@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://eneuros.com/sitemap-index.xml
