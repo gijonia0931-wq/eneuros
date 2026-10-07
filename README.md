@@ -1,4 +1,4 @@
-# eneuros.com
+# eneuros.es
 
 La economía explicada en euros. Web estática hecha con [Astro](https://astro.build) y publicada en Cloudflare Pages.
 
