@@ -37,3 +37,8 @@ Al subirlo a la rama `main`, Cloudflare Pages vuelve a publicar la web sola.
 npm install
 npm run dev
 ```
+
+## Páginas legales y cookies
+
+- `/aviso-legal/`, `/privacidad/` y `/cookies/` usan los datos del titular de `TITULAR` en `src/site.ts`.
+- El aviso de cookies (`src/components/CookieBanner.astro`) usa Google Consent Mode v2: la publicidad empieza denegada hasta que la persona elige. Cualquier elemento con `data-cookie-settings` vuelve a abrir el aviso.

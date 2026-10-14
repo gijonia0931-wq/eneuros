@@ -1,0 +1,42 @@
+---
+import Base from '../layouts/Base.astro';
+import { SITE, TITULAR, LEGAL_ACTUALIZADO } from '../site';
+---
+<Base title="Aviso legal" description="Datos del titular y condiciones de uso de eneuros.es.">
+  <article class="prose">
+    <h1>Aviso legal</h1>
+    <p class="updated">Última actualización: {LEGAL_ACTUALIZADO}</p>
+
+    <h2>Titular de la web</h2>
+    <p>En cumplimiento de la Ley 34/2002, de Servicios de la Sociedad de la Información y de Comercio Electrónico (LSSI), se informa de los datos del titular de este sitio web:</p>
+    <ul>
+      <li><strong>Titular:</strong> {TITULAR.nombre}</li>
+      <li><strong>NIF:</strong> {TITULAR.nif}</li>
+      <li><strong>Domicilio:</strong> {TITULAR.domicilio}</li>
+      <li><strong>Email de contacto:</strong> {TITULAR.email}</li>
+      <li><strong>Sitio web:</strong> eneuros.es</li>
+    </ul>
+
+    <h2>Objeto</h2>
+    <p>{SITE.name} es una web informativa que publica calculadoras, datos económicos y artículos sobre economía personal en España. Su uso es gratuito y no requiere registro.</p>
+
+    <h2>Carácter informativo de los contenidos</h2>
+    <p>Los contenidos, cálculos y datos de esta web son orientativos y se ofrecen con fines divulgativos. No constituyen asesoramiento financiero, fiscal ni jurídico. Antes de tomar decisiones económicas, consulta con un profesional o con la entidad correspondiente.</p>
+    <p>Los datos procedentes de fuentes oficiales (INE, Banco de España, Red Eléctrica, Ministerio, etc.) se muestran tal y como los publican dichas fuentes. Aunque se intenta que estén siempre actualizados y sean correctos, el titular no garantiza la ausencia de errores ni se responsabiliza de las decisiones tomadas a partir de ellos.</p>
+
+    <h2>Condiciones de uso</h2>
+    <p>Quien visita la web se compromete a hacer un uso adecuado de sus contenidos, de acuerdo con la ley, la buena fe y el orden público, y a no emplearlos para actividades ilícitas o que puedan dañar la web o a terceros.</p>
+
+    <h2>Propiedad intelectual</h2>
+    <p>Los textos, diseño, logotipo y código de esta web pertenecen a su titular o se usan con permiso. Puedes citar o enlazar los contenidos indicando la fuente y enlazando a eneuros.es. No está permitida su reproducción completa con fines comerciales sin autorización.</p>
+
+    <h2>Enlaces a otras webs</h2>
+    <p>Esta web puede incluir enlaces a páginas de terceros. El titular no controla ni se responsabiliza de sus contenidos o de sus políticas de privacidad.</p>
+
+    <h2>Publicidad</h2>
+    <p>Esta web se financia mediante publicidad, que puede ser servida por Google AdSense. Los anuncios se identifican como tales y su contenido es responsabilidad de los anunciantes. Más información en la <a href="/cookies/">política de cookies</a>.</p>
+
+    <h2>Legislación aplicable</h2>
+    <p>Este aviso legal se rige por la legislación española. Para cualquier controversia, las partes se someten a los juzgados y tribunales que correspondan conforme a la ley.</p>
+  </article>
+</Base>
