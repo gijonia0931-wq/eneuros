@@ -1,8 +1,15 @@
 ---
 import Base from '../layouts/Base.astro';
 import NewsletterBox from './NewsletterBox.astro';
-interface Props { title: string; description: string; date: Date; updated?: Date }
-const { title, description, date, updated } = Astro.props;
+import ArticleList from './ArticleList.astro';
+interface Props {
+  title: string;
+  description: string;
+  date: Date;
+  updated?: Date;
+  relacionadas?: { id: string; data: { title: string; description: string; date: Date } }[];
+}
+const { title, description, date, updated, relacionadas = [] } = Astro.props;
 const fmt = new Intl.DateTimeFormat('es-ES', { dateStyle: 'long' });
 ---
 <Base title={title} description={description}>
@@ -15,5 +22,11 @@ const fmt = new Intl.DateTimeFormat('es-ES', { dateStyle: 'long' });
     </p>
     <slot />
   </article>
+  {relacionadas.length > 0 && (
+    <section class="section prose">
+      <h2>Sigue leyendo</h2>
+      <ArticleList items={relacionadas} base="/guias/" empty="" />
+    </section>
+  )}
   <div class="section"><NewsletterBox /></div>
 </Base>

@@ -1,0 +1,35 @@
+---
+import Base from '../layouts/Base.astro';
+import { SITE, TITULAR } from '../site';
+---
+<Base title="Sobre eneuros" description="Quién está detrás de eneuros.es, para qué existe y cómo preparamos y revisamos cada contenido.">
+  <article class="prose">
+    <h1>Sobre eneuros</h1>
+    <p class="lead">{SITE.name} nace con una idea sencilla: que cualquier persona entienda qué significa cada noticia económica para su bolsillo, en euros concretos y sin jerga.</p>
+
+    <h2>Para quién escribimos</h2>
+    <p>Para gente que vive en España y que tiene que tomar decisiones de dinero en su día a día: firmar o revisar una hipoteca, renovar un alquiler, entender una nómina, elegir tarifa de luz o decidir qué hacer con sus ahorros. No hace falta saber de economía para leernos. Si un término técnico es imprescindible, lo explicamos en la misma frase.</p>
+
+    <h2>Qué encontrarás</h2>
+    <ul>
+      <li><a href="/guias/">Guías</a> que no caducan: cómo funciona el Euríbor, el IRPF, la factura de la luz o una letra del Tesoro, siempre con ejemplos hechos con números.</li>
+      <li><a href="/actualidad/">Actualidad explicada</a>: los datos oficiales que salen cada mes (Euríbor, IPC, luz...) traducidos a lo que cambia en tu cuota, tu alquiler o tu nómina.</li>
+      <li><a href="/calculadoras/">Calculadoras</a> y <a href="/datos/">datos al día</a>, para que hagas tus propias cuentas con las cifras oficiales más recientes.</li>
+    </ul>
+
+    <h2>Cómo trabajamos</h2>
+    <p>Cada cifra que publicamos sale de una fuente oficial: Boletín Oficial del Estado, Agencia Tributaria, Seguridad Social, INE, Banco de España, CNMC, Tesoro Público o el organismo que corresponda. Al final de cada artículo enlazamos las fuentes consultadas para que puedas comprobarlas.</p>
+    <p>Los ejemplos se calculan paso a paso y se revisan antes de publicarse. Cuando un dato cambia a diario, como el Euríbor o el precio de la luz, usamos ejemplos marcados como hipotéticos para que el razonamiento siga siendo válido aunque cambie la cifra. Para preparar los textos nos apoyamos en herramientas digitales, incluida la inteligencia artificial, y contrastamos cada dato con su fuente antes de publicarlo.</p>
+    <p>Indicamos la fecha de publicación de cada artículo y, cuando lo revisamos por un cambio de normativa, la fecha de actualización.</p>
+
+    <h2>Independencia</h2>
+    <p>{SITE.name} es un proyecto independiente, sin relación con bancos, aseguradoras ni comercializadoras de energía. No cobramos por recomendar productos. La web se financia con publicidad, que nunca condiciona lo que escribimos.</p>
+    <p>Nuestros contenidos son divulgativos y no sustituyen el consejo de un profesional que conozca tu situación concreta.</p>
+
+    <h2>Quién está detrás</h2>
+    <p>{SITE.name} es un proyecto de {TITULAR.nombre}, con base en Gijón (Asturias).</p>
+
+    <h2>¿Has visto un error?</h2>
+    <p>Si encuentras un dato desactualizado o un cálculo que no cuadra, escríbenos desde la página de <a href="/contacto/">contacto</a>. Lo revisamos y, si tienes razón, lo corregimos e indicamos la fecha de actualización.</p>
+  </article>
+</Base>

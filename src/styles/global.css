@@ -78,7 +78,8 @@ a.card:hover { border-color: var(--brand); transform: translateY(-2px); }
 
 .updated { color: var(--muted); font-size: .9rem; }
 .table-wrap { overflow-x: auto; }
-.prose table { border-collapse: collapse; width: 100%; font-size: .9rem; }
+.prose table { border-collapse: collapse; width: 100%; font-size: .9rem; display: block; overflow-x: auto; }
+.prose table { margin: 1em 0; }
 .prose th, .prose td { text-align: left; vertical-align: top; padding: 8px 10px; border-bottom: 1px solid var(--line); }
 .prose th { background: var(--brand-soft); }
 

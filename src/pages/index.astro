@@ -5,6 +5,7 @@ import ArticleList from '../components/ArticleList.astro';
 import { SITE, CALCULADORAS, DATOS } from '../site';
 import { publicados } from '../lib';
 const actualidad = (await publicados('actualidad')).slice(0, 5);
+const guias = (await publicados('guias')).slice(0, 6);
 ---
 <Base>
   <section class="hero">
@@ -34,6 +35,11 @@ const actualidad = (await publicados('actualidad')).slice(0, 5);
   <section class="section">
     <div class="section-head"><h2>Actualidad explicada</h2><a href="/actualidad/">Ver todo</a></div>
     <ArticleList items={actualidad} base="/actualidad/" empty="Pronto publicaremos las primeras noticias explicadas." />
+  </section>
+
+  <section class="section">
+    <div class="section-head"><h2>Guías</h2><a href="/guias/">Ver todas</a></div>
+    <ArticleList items={guias} base="/guias/" empty="Pronto publicaremos las primeras guías." />
   </section>
 
   <section class="section"><NewsletterBox /></section>
