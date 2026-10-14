@@ -32,7 +32,7 @@ export const DATOS = [
 export const TITULAR = {
   nombre: 'Elías García Sánchez',
   nif: '53778829E',
-  domicilio: 'C/ Torcuato Fernández Miranda nº 12, 7º D',
+  domicilio: 'C/ Torcuato Fernández Miranda nº 12, 7º D, 33203 Gijón (Asturias)',
   email: 'gijonia0931@gmail.com',
 };
 
