@@ -1,0 +1,11 @@
+---
+interface Props {
+  calc: { slug: string; title: string; desc: string; disponible?: boolean };
+}
+const { calc } = Astro.props;
+---
+{calc.disponible ? (
+  <a class="card" href={`/calculadoras/${calc.slug}/`}><span class="badge badge-ok">Calculadora</span><h3>{calc.title}</h3><p>{calc.desc}</p></a>
+) : (
+  <div class="card"><span class="badge">Próximamente</span><h3>{calc.title}</h3><p>{calc.desc}</p></div>
+)}

@@ -42,3 +42,9 @@ npm run dev
 
 - `/aviso-legal/`, `/privacidad/` y `/cookies/` usan los datos del titular de `TITULAR` en `src/site.ts`.
 - El aviso de cookies (`src/components/CookieBanner.astro`) usa Google Consent Mode v2: la publicidad empieza denegada hasta que la persona elige. Cualquier elemento con `data-cookie-settings` vuelve a abrir el aviso.
+
+## Calculadoras
+
+- Cada calculadora es una página en `src/pages/calculadoras/<slug>.astro`, con sus cuentas en `src/calc/`.
+- Para que su tarjeta enlace a la página en vez de mostrar "Próximamente", pon `disponible: true` en `CALCULADORAS` (`src/site.ts`).
+- El Euríbor que usa la calculadora de hipoteca está en `EURIBOR` (`src/site.ts`): actualízalo cada mes con el dato oficial del Banco de España.

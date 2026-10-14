@@ -1,4 +1,5 @@
 ---
+import CalcCard from '../../components/CalcCard.astro';
 import Base from '../../layouts/Base.astro';
 import { CALCULADORAS } from '../../site';
 ---
@@ -6,8 +7,6 @@ import { CALCULADORAS } from '../../site';
   <h1>Calculadoras</h1>
   <p class="lead">Herramientas gratuitas para hacer tus cuentas en segundos, con los datos oficiales más recientes.</p>
   <div class="grid section">
-    {CALCULADORAS.map((c) => (
-      <div class="card"><span class="badge">Próximamente</span><h3>{c.title}</h3><p>{c.desc}</p></div>
-    ))}
+    {CALCULADORAS.map((c) => <CalcCard calc={c} />)}
   </div>
 </Base>

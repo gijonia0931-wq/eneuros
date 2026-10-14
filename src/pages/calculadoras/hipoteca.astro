@@ -1,0 +1,260 @@
+---
+import Base from '../../layouts/Base.astro';
+import NewsletterBox from '../../components/NewsletterBox.astro';
+import { EURIBOR } from '../../site';
+import { calcularHipoteca, cuotaMensual, euros, eurosRedondo, porcentaje } from '../../calc/hipoteca';
+
+// Valores iniciales: los mismos del ejemplo de la guía "Cómo se calcula la cuota de la hipoteca".
+const INICIAL = { importe: 180000, anios: 25, tin: 3, diferencial: 0.6 };
+const fmtNum = (n: number) => n.toLocaleString('es-ES', { maximumFractionDigits: 3 });
+const r = calcularHipoteca(INICIAL.importe, INICIAL.tin, INICIAL.anios);
+const primerAnio = r.anios[0];
+const tipoVariable = EURIBOR.valor + INICIAL.diferencial;
+const cuotaVariable = cuotaMensual(INICIAL.importe, tipoVariable, INICIAL.anios * 12);
+const ESCENARIOS = [-1, -0.5, 0, 0.5, 1];
+---
+<Base
+  title="Calculadora de hipoteca y Euríbor"
+  description={`Calcula la cuota de tu hipoteca fija o variable con el Euríbor actual (${porcentaje(EURIBOR.valor)}), cuánto pagarás de intereses y cómo cambia tu cuota si sube o baja el Euríbor.`}
+>
+  <h1>Calculadora de hipoteca y Euríbor</h1>
+  <p class="lead">Calcula cuánto pagarás cada mes, cuánto se lleva el banco en intereses y cómo cambiaría tu cuota si el Euríbor sube o baja.</p>
+
+  <div class="calc section">
+    <form class="calc-form" id="calc-hipoteca" novalidate onsubmit="return false">
+      <fieldset class="calc-modo">
+        <legend>Tipo de hipoteca</legend>
+        <label><input type="radio" name="modo" value="fija" checked /> Fija</label>
+        <label><input type="radio" name="modo" value="variable" /> Variable</label>
+      </fieldset>
+
+      <label class="calc-field">
+        <span>Dinero que pides al banco</span>
+        <span class="calc-input"><input name="importe" inputmode="decimal" autocomplete="off" value={fmtNum(INICIAL.importe)} /><span>€</span></span>
+        <small>No es el precio de la casa, sino lo que te presta el banco.</small>
+      </label>
+
+      <label class="calc-field">
+        <span>Plazo</span>
+        <span class="calc-input"><input name="anios" inputmode="numeric" autocomplete="off" value={INICIAL.anios} /><span>años</span></span>
+      </label>
+
+      <label class="calc-field" data-modo="fija">
+        <span>Tipo de interés fijo (TIN)</span>
+        <span class="calc-input"><input name="tin" inputmode="decimal" autocomplete="off" value={fmtNum(INICIAL.tin)} /><span>%</span></span>
+        <small>Usa el TIN de la oferta, no la TAE.</small>
+      </label>
+
+      <label class="calc-field" data-modo="variable" hidden>
+        <span>Euríbor</span>
+        <span class="calc-input"><input name="euribor" inputmode="decimal" autocomplete="off" value={fmtNum(EURIBOR.valor)} /><span>%</span></span>
+        <small>Último dato oficial: {porcentaje(EURIBOR.valor)} ({EURIBOR.mes}).</small>
+      </label>
+
+      <label class="calc-field" data-modo="variable" hidden>
+        <span>Diferencial</span>
+        <span class="calc-input"><input name="diferencial" inputmode="decimal" autocomplete="off" value={fmtNum(INICIAL.diferencial)} /><span>%</span></span>
+        <small>Lo que el banco suma al Euríbor. Viene en tu oferta o tu escritura.</small>
+      </label>
+
+      <label class="calc-field">
+        <span>Ingresos netos al mes (opcional)</span>
+        <span class="calc-input"><input name="ingresos" inputmode="decimal" autocomplete="off" placeholder="Ej.: 2.500" /><span>€</span></span>
+        <small>Lo que entra en casa cada mes, para ver si la cuota es asumible.</small>
+      </label>
+    </form>
+
+    <div class="calc-result" aria-live="polite">
+      <p class="calc-error" data-out="error" hidden></p>
+      <div data-out="ok">
+        <div class="calc-label">Cuota mensual</div>
+        <div class="calc-big" data-out="cuota">{euros(r.cuota)}</div>
+        <div class="calc-sub" data-out="tipo">Con un tipo del {porcentaje(INICIAL.tin)} durante {INICIAL.anios} años ({INICIAL.anios * 12} cuotas)</div>
+        <dl class="calc-stats">
+          <div><dt>Intereses en total</dt><dd data-out="intereses">{eurosRedondo(r.totalIntereses)}</dd></div>
+          <div><dt>Pagarás en total</dt><dd data-out="total">{eurosRedondo(r.totalPagado)}</dd></div>
+          <div><dt>El primer año, intereses</dt><dd data-out="int1">{eurosRedondo(primerAnio.intereses)}</dd></div>
+          <div><dt>El primer año, deuda que devuelves</dt><dd data-out="cap1">{eurosRedondo(primerAnio.capital)}</dd></div>
+        </dl>
+        <p class="calc-esfuerzo" data-out="esfuerzo" hidden></p>
+      </div>
+    </div>
+  </div>
+
+  <section class="section prose" data-modo="variable" hidden>
+    <h2>Qué pasa si cambia el Euríbor</h2>
+    <p>Tu cuota con el Euríbor más alto o más bajo, con los mismos datos de arriba.</p>
+    <div class="table-wrap">
+      <table class="calc-table">
+        <thead><tr><th>Euríbor</th><th>Tipo que pagarías</th><th>Cuota mensual</th><th>Diferencia al mes</th></tr></thead>
+        <tbody data-out="escenarios">
+          {ESCENARIOS.map((d) => {
+            const tipo = Math.max(EURIBOR.valor + d + INICIAL.diferencial, 0);
+            const c = cuotaMensual(INICIAL.importe, tipo, INICIAL.anios * 12);
+            return (
+              <tr class={d === 0 ? 'actual' : undefined}>
+                <td>{porcentaje(EURIBOR.valor + d)}{d === 0 && ' (actual)'}</td>
+                <td>{porcentaje(tipo)}</td>
+                <td>{euros(c)}</td>
+                <td>{d === 0 ? '-' : `${c > cuotaVariable ? '+' : ''}${euros(c - cuotaVariable)}`}</td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+    <p class="calc-nota">En una hipoteca real, el cambio se aplica en cada revisión (cada 6 o 12 meses) sobre lo que te quede por pagar, así que la diferencia será algo menor si ya llevas años pagando.</p>
+  </section>
+
+  <section class="section prose">
+    <details class="calc-cuadro">
+      <summary>Ver cómo se reparte cada año entre intereses y deuda</summary>
+      <div class="table-wrap">
+        <table class="calc-table">
+          <thead><tr><th>Año</th><th>Intereses</th><th>Deuda devuelta</th><th>Te queda por pagar</th></tr></thead>
+          <tbody data-out="cuadro">
+            {r.anios.map((a) => (
+              <tr><td>{a.anio}</td><td>{euros(a.intereses)}</td><td>{euros(a.capital)}</td><td>{euros(a.pendiente)}</td></tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </details>
+    <p class="calc-nota">Resultados orientativos. No incluyen seguros, comisiones ni los gastos de compra de la vivienda, y tu banco puede redondear de otra forma. Para decidir, pide siempre la Ficha Europea de Información Normalizada (FEIN) de tu oferta.</p>
+  </section>
+
+  <article class="section prose">
+    <h2>Cómo usar la calculadora</h2>
+    <ol>
+      <li><strong>Elige si tu hipoteca es fija o variable.</strong> En una fija el tipo no cambia nunca. En una variable pagas el Euríbor más un diferencial, y la cuota se recalcula cada 6 o 12 meses.</li>
+      <li><strong>Escribe el dinero que pides</strong>, no el precio de la vivienda. Si la casa cuesta 225.000 € y pones 45.000 € de ahorros, pides 180.000 €.</li>
+      <li><strong>Pon el plazo en años.</strong> Lo habitual en España está entre 20 y 30 años.</li>
+      <li><strong>Pon el tipo de interés.</strong> En una fija, el TIN de la oferta. En una variable, el diferencial: el Euríbor ya viene puesto con el último dato oficial ({porcentaje(EURIBOR.valor)} en {EURIBOR.mes}), pero puedes cambiarlo para probar otros escenarios.</li>
+      <li><strong>Si quieres, añade tus ingresos netos al mes</strong> y verás qué parte de tu sueldo se lleva la cuota.</li>
+    </ol>
+
+    <h2>Cómo se calcula la cuota</h2>
+    <p>Casi todas las hipotecas en España usan el sistema francés: pagas la misma cuota cada mes mientras no cambie el tipo de interés. Dentro de esa cuota, al principio la mayor parte son intereses y al final casi todo es deuda que devuelves. La fórmula es:</p>
+    <p><strong>Cuota = P × i / (1 − (1 + i)<sup>−n</sup>)</strong></p>
+    <p>Donde P es el dinero que pides, i es el tipo de interés anual dividido entre 12 y n es el número de cuotas (años × 12). Con los datos que vienen puestos, 180.000 € a 25 años al 3 %, la cuota sale a <strong>853,58 € al mes</strong> y pagarías unos <strong>76.074 € de intereses</strong> en total. Lo explicamos paso a paso en <a href="/guias/como-se-calcula-la-cuota-de-la-hipoteca/">cómo se calcula la cuota de la hipoteca</a>.</p>
+
+    <h2>Hipoteca variable: cómo te afecta el Euríbor</h2>
+    <p>En una hipoteca variable, tu tipo es el Euríbor a un año más tu diferencial. Si el Euríbor está en el {porcentaje(EURIBOR.valor)} y tu diferencial es del 0,6 %, pagas un {porcentaje(tipoVariable)}. Para 180.000 € a 25 años, eso es una cuota de <strong>{euros(cuotaVariable)}</strong>.</p>
+    <p>Cada medio punto que sube el Euríbor encarece esa cuota en unos 50 € al mes. Por eso, al elegir la opción "Variable", la calculadora te enseña una tabla con lo que pagarías si el Euríbor sube o baja medio punto o un punto. Si quieres entender de dónde sale el Euríbor y cuándo se aplica, lee <a href="/guias/que-es-el-euribor/">qué es el Euríbor</a>, y para elegir entre una y otra, <a href="/guias/hipoteca-fija-variable-o-mixta/">hipoteca fija, variable o mixta</a>.</p>
+
+    <h2>El plazo cambia mucho lo que pagas</h2>
+    <p>Alargar el plazo baja la cuota, pero sube mucho los intereses. Con 180.000 € al 3 %:</p>
+    <div class="table-wrap">
+      <table class="calc-table">
+        <thead><tr><th>Plazo</th><th>Cuota mensual</th><th>Intereses en total</th></tr></thead>
+        <tbody>
+          {[20, 25, 30].map((a) => {
+            const x = calcularHipoteca(180000, 3, a);
+            return <tr><td>{a} años</td><td>{euros(x.cuota)}</td><td>{eurosRedondo(x.totalIntereses)}</td></tr>;
+          })}
+        </tbody>
+      </table>
+    </div>
+    <p>Pasar de 20 a 30 años te ahorra unos 240 € al mes, pero pagas más de 33.000 € extra en intereses. Si más adelante te sobra dinero, adelantar pagos al principio es lo que más intereses ahorra: lo vemos en <a href="/guias/amortizar-hipoteca-cuota-o-plazo/">amortizar hipoteca: cuota o plazo</a>.</p>
+
+    <h2>¿Qué cuota me puedo permitir?</h2>
+    <p>Como referencia habitual, los bancos suelen pedir que todas tus deudas juntas no se lleven más del 30 % al 35 % de tus ingresos netos. Por encima de eso, cualquier imprevisto o una subida del Euríbor aprieta mucho el presupuesto. Si rellenas tus ingresos, la calculadora te dice en qué punto estás.</p>
+
+    <h2>Preguntas frecuentes</h2>
+    <h3>¿Uso el TIN o la TAE?</h3>
+    <p>El TIN. La cuota se calcula con el TIN; la TAE incluye además comisiones y otros costes y sirve para comparar ofertas entre sí. Más detalles en <a href="/guias/tin-y-tae-diferencias/">TIN y TAE: diferencias</a>.</p>
+    <h3>¿Por qué mi banco me da una cuota algo distinta?</h3>
+    <p>Puede deberse a redondeos, a que la primera cuota se cobre antes o después de un mes completo, o a que el banco incluya en el recibo seguros u otros productos. La diferencia debería ser de pocos euros; si es mayor, pide que te lo expliquen.</p>
+    <h3>¿Incluye los gastos de comprar la casa?</h3>
+    <p>No. Además de la entrada, comprar una vivienda tiene impuestos, notaría, registro y gestoría, que en una vivienda de segunda mano pueden rondar el 10 % del precio, según la comunidad autónoma. Lo desglosamos en <a href="/guias/gastos-de-comprar-una-vivienda/">gastos de comprar una vivienda</a>.</p>
+    <h3>¿Y si mi hipoteca es mixta?</h3>
+    <p>Calcula primero la parte fija con su tipo y el plazo total. Para los años variables, elige "Variable" y pon como dinero lo que te quedará por pagar al acabar el tramo fijo (lo verás en tu cuadro de amortización) y los años que falten.</p>
+  </article>
+
+  <div class="section"><NewsletterBox /></div>
+</Base>
+
+<script>
+  import { calcularHipoteca, cuotaMensual, leerNumero, euros, eurosRedondo, porcentaje } from '../../calc/hipoteca';
+
+  const form = document.getElementById('calc-hipoteca') as HTMLFormElement;
+  const out = (name: string) => document.querySelector(`[data-out="${name}"]`) as HTMLElement;
+  const campo = (name: string) => leerNumero((form.elements.namedItem(name) as HTMLInputElement).value);
+  const ESCENARIOS = [-1, -0.5, 0, 0.5, 1];
+
+  function error(msg: string) {
+    out('error').textContent = msg;
+    out('error').hidden = false;
+    out('ok').hidden = true;
+  }
+
+  function recalcular() {
+    const modo = (form.elements.namedItem('modo') as RadioNodeList).value;
+    document.querySelectorAll<HTMLElement>('[data-modo]').forEach((el) => (el.hidden = el.dataset.modo !== modo));
+
+    const importe = campo('importe');
+    const anios = campo('anios');
+    const euribor = campo('euribor');
+    const diferencial = campo('diferencial');
+    const tipo = modo === 'fija' ? campo('tin') : euribor + diferencial;
+    const ingresos = campo('ingresos');
+
+    if (!(importe > 0)) return error('Escribe cuánto dinero pides al banco.');
+    if (!(anios >= 1 && anios <= 40)) return error('El plazo tiene que estar entre 1 y 40 años.');
+    if (modo === 'fija' && !(tipo >= 0 && tipo <= 20)) return error('Escribe un tipo de interés entre 0 y 20 %.');
+    if (modo === 'variable' && !(Number.isFinite(euribor) && diferencial >= 0 && euribor <= 20 && diferencial <= 10))
+      return error('Revisa el Euríbor y el diferencial.');
+
+    out('error').hidden = true;
+    out('ok').hidden = false;
+    const tipoAplicado = Math.max(tipo, 0);
+    const meses = Math.round(anios * 12);
+    const r = calcularHipoteca(importe, tipoAplicado, anios);
+
+    out('cuota').textContent = euros(r.cuota);
+    out('tipo').textContent =
+      (modo === 'fija'
+        ? `Con un tipo del ${porcentaje(tipoAplicado)}`
+        : `Con Euríbor + diferencial = ${porcentaje(tipoAplicado)}${tipo < 0 ? ' (el tipo no puede ser negativo)' : ''}`) +
+      ` durante ${anios} años (${meses} cuotas)`;
+    out('intereses').textContent = eurosRedondo(r.totalIntereses);
+    out('total').textContent = eurosRedondo(r.totalPagado);
+    out('int1').textContent = eurosRedondo(r.anios[0].intereses);
+    out('cap1').textContent = eurosRedondo(r.anios[0].capital);
+
+    const esfuerzo = out('esfuerzo');
+    if (ingresos > 0) {
+      const p = (r.cuota / ingresos) * 100;
+      const nivel = p <= 30 ? 'ok' : p <= 35 ? 'justo' : 'alto';
+      esfuerzo.dataset.nivel = nivel;
+      esfuerzo.textContent =
+        `La cuota se lleva el ${porcentaje(Math.round(p * 10) / 10)} de tus ingresos. ` +
+        (nivel === 'ok'
+          ? 'Está dentro de lo que suelen aceptar los bancos (hasta el 30-35 %).'
+          : nivel === 'justo'
+            ? 'Está en el límite de lo que suelen aceptar los bancos (30-35 %).'
+            : 'Pasa del 35 %: es probable que el banco no la apruebe y te dejaría poco margen.');
+      esfuerzo.hidden = false;
+    } else {
+      esfuerzo.hidden = true;
+    }
+
+    if (modo === 'variable') {
+      const base = cuotaMensual(importe, tipoAplicado, meses);
+      out('escenarios').innerHTML = ESCENARIOS.map((d) => {
+        const t = Math.max(euribor + d + diferencial, 0);
+        const c = cuotaMensual(importe, t, meses);
+        const dif = d === 0 ? '-' : `${c > base ? '+' : ''}${euros(c - base)}`;
+        return `<tr${d === 0 ? ' class="actual"' : ''}><td>${porcentaje(Math.round((euribor + d) * 1000) / 1000)}${d === 0 ? ' (actual)' : ''}</td><td>${porcentaje(Math.round(t * 1000) / 1000)}</td><td>${euros(c)}</td><td>${dif}</td></tr>`;
+      }).join('');
+    }
+
+    out('cuadro').innerHTML = r.anios
+      .map((a) => `<tr><td>${a.anio}</td><td>${euros(a.intereses)}</td><td>${euros(a.capital)}</td><td>${euros(a.pendiente)}</td></tr>`)
+      .join('');
+  }
+
+  form.addEventListener('input', recalcular);
+  form.addEventListener('change', recalcular);
+  recalcular();
+</script>
