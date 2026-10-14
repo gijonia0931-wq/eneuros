@@ -29,12 +29,11 @@ export const DATOS = [
 ];
 
 // Datos del titular de la web. La ley (LSSI) obliga a mostrarlos en el aviso legal.
-// Sustituye los textos entre corchetes por los datos reales.
 export const TITULAR = {
-  nombre: '[Nombre y apellidos]',
-  nif: '[DNI o NIF]',
-  domicilio: '[Dirección completa]',
-  email: '[Email de contacto]',
+  nombre: 'Elías García Sánchez',
+  nif: '53778829E',
+  domicilio: 'C/ Torcuato Fernández Miranda nº 12, 7º D',
+  email: 'gijonia0931@gmail.com',
 };
 
 export const LEGAL_ACTUALIZADO = '14 de octubre de 2026';
