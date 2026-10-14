@@ -2,7 +2,7 @@
 import ArticlePage from '../../components/ArticlePage.astro';
 import { render } from 'astro:content';
 import { publicados } from '../../lib';
-import { TEMAS_GUIAS } from '../../site';
+import { TEMAS_GUIAS, CALCULADORAS } from '../../site';
 
 export async function getStaticPaths() {
   const items = await publicados('guias');
@@ -11,10 +11,11 @@ export async function getStaticPaths() {
     const relacionadas = (tema ? tema.guias.filter((id) => id !== entry.id) : [])
       .flatMap((id) => items.find((g) => g.id === id) ?? [])
       .slice(0, 3);
-    return { params: { slug: entry.id }, props: { entry, relacionadas } };
+    const calculadora = CALCULADORAS.find((c) => c.disponible && c.slug === tema?.calculadora);
+    return { params: { slug: entry.id }, props: { entry, relacionadas, calculadora } };
   });
 }
-const { entry, relacionadas } = Astro.props;
+const { entry, relacionadas, calculadora } = Astro.props;
 const { Content } = await render(entry);
 ---
-<ArticlePage {...entry.data} relacionadas={relacionadas}><Content /></ArticlePage>
+<ArticlePage {...entry.data} relacionadas={relacionadas} calculadora={calculadora}><Content /></ArticlePage>

@@ -8,8 +8,9 @@ interface Props {
   date: Date;
   updated?: Date;
   relacionadas?: { id: string; data: { title: string; description: string; date: Date } }[];
+  calculadora?: { slug: string; title: string; desc: string };
 }
-const { title, description, date, updated, relacionadas = [] } = Astro.props;
+const { title, description, date, updated, relacionadas = [], calculadora } = Astro.props;
 const fmt = new Intl.DateTimeFormat('es-ES', { dateStyle: 'long' });
 ---
 <Base title={title} description={description}>
@@ -22,6 +23,12 @@ const fmt = new Intl.DateTimeFormat('es-ES', { dateStyle: 'long' });
     </p>
     <slot />
   </article>
+  {calculadora && (
+    <aside class="calc-cta prose">
+      <strong>Calculadora {calculadora.title}.</strong> {calculadora.desc}
+      <a class="btn" href={`/calculadoras/${calculadora.slug}/`}>Abrir la calculadora</a>
+    </aside>
+  )}
   {relacionadas.length > 0 && (
     <section class="section prose">
       <h2>Sigue leyendo</h2>

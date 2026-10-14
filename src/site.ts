@@ -13,8 +13,12 @@ export const NAV = [
   { href: '/newsletter/', label: 'Newsletter' },
 ];
 
+// Último Euríbor a 12 meses oficial (media mensual, Banco de España). Actualizar cada mes.
+export const EURIBOR = { valor: 3.247, mes: 'septiembre de 2026' };
+
+// `disponible: true` hace que la tarjeta enlace a /calculadoras/<slug>/ en vez de mostrar "Próximamente".
 export const CALCULADORAS = [
-  { slug: 'hipoteca', title: 'Hipoteca y Euríbor', desc: 'Cuánto pagarás al mes y cómo te afecta la subida o bajada del Euríbor.' },
+  { slug: 'hipoteca', title: 'Hipoteca y Euríbor', desc: 'Cuánto pagarás al mes y cómo te afecta la subida o bajada del Euríbor.', disponible: true },
   { slug: 'alquiler-ipc', title: 'Actualizar alquiler con el IPC', desc: 'Calcula la nueva renta de tu alquiler según el IPC o el índice oficial.' },
   { slug: 'sueldo-neto', title: 'Sueldo neto 2026', desc: 'De bruto a neto: IRPF y Seguridad Social con las tablas de 2026.' },
   { slug: 'factura-luz', title: 'Factura de la luz', desc: 'Compara PVPC y mercado libre según tu consumo y potencia.' },
@@ -48,7 +52,7 @@ export const LEGAL_NAV = [
 
 // Temas de las guías: ordenan el índice de /guias/ y las "guías relacionadas" de cada artículo.
 export const TEMAS_GUIAS = [
-  { titulo: 'Hipoteca y vivienda', guias: ['que-es-el-euribor', 'hipoteca-fija-variable-o-mixta', 'como-se-calcula-la-cuota-de-la-hipoteca', 'tin-y-tae-diferencias', 'amortizar-hipoteca-cuota-o-plazo', 'gastos-de-comprar-una-vivienda'] },
+  { titulo: 'Hipoteca y vivienda', calculadora: 'hipoteca', guias: ['que-es-el-euribor', 'hipoteca-fija-variable-o-mixta', 'como-se-calcula-la-cuota-de-la-hipoteca', 'tin-y-tae-diferencias', 'amortizar-hipoteca-cuota-o-plazo', 'gastos-de-comprar-una-vivienda'] },
   { titulo: 'Nómina e impuestos', guias: ['sueldo-bruto-a-neto', 'tramos-irpf', 'retenciones-irpf-nomina', 'pagas-extra-prorrateadas'] },
   { titulo: 'Alquiler', guias: ['actualizar-alquiler-ipc', 'fianza-del-alquiler', 'cuanto-alquiler-puedo-pagar'] },
   { titulo: 'Factura de la luz', guias: ['como-leer-la-factura-de-la-luz', 'pvpc-o-mercado-libre', 'tramos-horarios-luz', 'potencia-contratada-luz'] },
