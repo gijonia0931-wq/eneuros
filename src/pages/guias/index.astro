@@ -2,10 +2,22 @@
 import Base from '../../layouts/Base.astro';
 import ArticleList from '../../components/ArticleList.astro';
 import { publicados } from '../../lib';
+import { TEMAS_GUIAS } from '../../site';
 const items = await publicados('guias');
+const porId = new Map(items.map((g) => [g.id, g]));
+const temas = TEMAS_GUIAS.map((t) => ({ titulo: t.titulo, items: t.guias.flatMap((id) => porId.get(id) ?? []) })).filter((t) => t.items.length);
+const conTema = new Set(TEMAS_GUIAS.flatMap((t) => t.guias));
+const otras = items.filter((g) => !conTema.has(g.id));
+if (otras.length) temas.push({ titulo: 'Otras guías', items: otras });
 ---
 <Base title="Guías" description="Guías claras sobre hipotecas, impuestos, ahorro, alquiler y facturas en España.">
   <h1>Guías</h1>
-  <p class="lead">Guías claras sobre hipotecas, impuestos, ahorro, alquiler y facturas en España.</p>
-  <div class="section"><ArticleList items={items} base="/guias/" empty="Pronto publicaremos las primeras guías." /></div>
+  <p class="lead">Guías claras sobre hipotecas, impuestos, ahorro, alquiler y facturas en España, con ejemplos en euros.</p>
+  {temas.length === 0 && <div class="section"><ArticleList items={[]} base="/guias/" empty="Pronto publicaremos las primeras guías." /></div>}
+  {temas.map((t) => (
+    <section class="section">
+      <h2>{t.titulo}</h2>
+      <ArticleList items={t.items} base="/guias/" empty="" />
+    </section>
+  ))}
 </Base>

@@ -2,12 +2,19 @@
 import ArticlePage from '../../components/ArticlePage.astro';
 import { render } from 'astro:content';
 import { publicados } from '../../lib';
+import { TEMAS_GUIAS } from '../../site';
 
 export async function getStaticPaths() {
   const items = await publicados('guias');
-  return items.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+  return items.map((entry) => {
+    const tema = TEMAS_GUIAS.find((t) => t.guias.includes(entry.id));
+    const relacionadas = (tema ? tema.guias.filter((id) => id !== entry.id) : [])
+      .flatMap((id) => items.find((g) => g.id === id) ?? [])
+      .slice(0, 3);
+    return { params: { slug: entry.id }, props: { entry, relacionadas } };
+  });
 }
-const { entry } = Astro.props;
+const { entry, relacionadas } = Astro.props;
 const { Content } = await render(entry);
 ---
-<ArticlePage {...entry.data}><Content /></ArticlePage>
+<ArticlePage {...entry.data} relacionadas={relacionadas}><Content /></ArticlePage>

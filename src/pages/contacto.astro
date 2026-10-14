@@ -1,0 +1,24 @@
+---
+import Base from '../layouts/Base.astro';
+import { SITE, TITULAR } from '../site';
+---
+<Base title="Contacto" description="Cómo ponerte en contacto con eneuros.es para dudas, correcciones o propuestas.">
+  <article class="prose">
+    <h1>Contacto</h1>
+    <p class="lead">Nos interesa saber qué dudas tienes con tu dinero y si algo de lo que publicamos se puede explicar mejor.</p>
+
+    <p>Puedes escribirnos a <a href={`mailto:${TITULAR.email}`}>{TITULAR.email}</a>. Respondemos lo antes posible.</p>
+
+    <h2>Para qué puedes escribirnos</h2>
+    <ul>
+      <li><strong>Correcciones:</strong> si ves un dato desactualizado o un cálculo que no cuadra, indícanos la página y lo revisamos.</li>
+      <li><strong>Propuestas de temas:</strong> guías o calculadoras que te gustaría encontrar en {SITE.name}.</li>
+      <li><strong>Colaboraciones y prensa.</strong></li>
+    </ul>
+
+    <h2>Lo que no podemos hacer</h2>
+    <p>No ofrecemos asesoramiento financiero, fiscal ni jurídico personalizado. Para revisar tu caso concreto (tu declaración de la renta, la oferta de hipoteca de tu banco o un contrato de alquiler) te recomendamos acudir a un profesional, a la Agencia Tributaria, al Banco de España o a las oficinas de consumo de tu comunidad autónoma.</p>
+
+    <p>Los datos que nos envíes se tratan como explica nuestra <a href="/privacidad/">política de privacidad</a>.</p>
+  </article>
+</Base>
