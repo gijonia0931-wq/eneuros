@@ -1,0 +1,94 @@
+---
+// Aviso de cookies propio con Google Consent Mode v2.
+// Por defecto todo lo que no es necesario está denegado hasta que la persona elige.
+---
+<div class="cookie-banner" id="cookie-banner" role="dialog" aria-labelledby="cookie-title" aria-describedby="cookie-text" hidden>
+  <div class="cookie-inner">
+    <h2 id="cookie-title">Tu privacidad</h2>
+    <p id="cookie-text">Usamos cookies propias necesarias para que la web funcione y, si lo aceptas, cookies de Google para mostrar anuncios y medir su rendimiento. Puedes aceptarlas, rechazarlas o elegir. Más información en la <a href="/cookies/">política de cookies</a>.</p>
+    <div class="cookie-options" id="cookie-options" hidden>
+      <label><input type="checkbox" checked disabled /> <span><strong>Necesarias.</strong> Siempre activas.</span></label>
+      <label><input type="checkbox" id="cookie-ads" /> <span><strong>Publicidad.</strong> Guardar y leer cookies para mostrar y medir anuncios.</span></label>
+      <label><input type="checkbox" id="cookie-ads-personal" /> <span><strong>Anuncios personalizados.</strong> Usar tus datos para mostrarte anuncios según tus intereses.</span></label>
+    </div>
+    <div class="cookie-actions">
+      <button type="button" class="btn btn-secondary" data-cookie="reject">Rechazar</button>
+      <button type="button" class="btn btn-secondary" data-cookie="configure">Configurar</button>
+      <button type="button" class="btn btn-secondary" data-cookie="save" hidden>Guardar mi elección</button>
+      <button type="button" class="btn" data-cookie="accept">Aceptar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const KEY = 'eneuros-consent';
+  const VERSION = 1;
+  const MAX_AGE = 365 * 24 * 60 * 60 * 1000; // 12 meses
+
+  type Choice = { ads: boolean; adsPersonal: boolean };
+
+  const banner = document.getElementById('cookie-banner') as HTMLElement;
+  const options = document.getElementById('cookie-options') as HTMLElement;
+  const ads = document.getElementById('cookie-ads') as HTMLInputElement;
+  const adsPersonal = document.getElementById('cookie-ads-personal') as HTMLInputElement;
+  const btn = (name: string) => banner.querySelector(`[data-cookie="${name}"]`) as HTMLButtonElement;
+
+  function read(): Choice | null {
+    try {
+      const saved = JSON.parse(localStorage.getItem(KEY) || 'null');
+      if (saved && saved.v === VERSION && Date.now() - saved.t < MAX_AGE) return saved.choice;
+    } catch {}
+    return null;
+  }
+
+  function apply(choice: Choice) {
+    const g = (s: boolean) => (s ? 'granted' : 'denied');
+    (window as any).gtag?.('consent', 'update', {
+      ad_storage: g(choice.ads),
+      ad_user_data: g(choice.ads),
+      ad_personalization: g(choice.ads && choice.adsPersonal),
+    });
+    document.dispatchEvent(new CustomEvent('eneuros:consent', { detail: choice }));
+  }
+
+  function save(choice: Choice) {
+    try {
+      localStorage.setItem(KEY, JSON.stringify({ v: VERSION, t: Date.now(), choice }));
+    } catch {}
+    apply(choice);
+    close();
+  }
+
+  function open(withOptions = false) {
+    const current = read();
+    ads.checked = current?.ads ?? false;
+    adsPersonal.checked = current?.adsPersonal ?? false;
+    showOptions(withOptions);
+    banner.hidden = false;
+  }
+
+  function showOptions(show: boolean) {
+    options.hidden = !show;
+    btn('configure').hidden = show;
+    btn('save').hidden = !show;
+  }
+
+  function close() {
+    banner.hidden = true;
+  }
+
+  btn('accept').addEventListener('click', () => save({ ads: true, adsPersonal: true }));
+  btn('reject').addEventListener('click', () => save({ ads: false, adsPersonal: false }));
+  btn('configure').addEventListener('click', () => showOptions(true));
+  btn('save').addEventListener('click', () => save({ ads: ads.checked, adsPersonal: ads.checked && adsPersonal.checked }));
+  adsPersonal.addEventListener('change', () => { if (adsPersonal.checked) ads.checked = true; });
+  ads.addEventListener('change', () => { if (!ads.checked) adsPersonal.checked = false; });
+
+  document.querySelectorAll('[data-cookie-settings]').forEach((el) =>
+    el.addEventListener('click', (e) => { e.preventDefault(); open(true); }),
+  );
+
+  const saved = read();
+  if (saved) apply(saved);
+  else open();
+</script>

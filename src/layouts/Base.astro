@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
-import { SITE, NAV } from '../site';
+import CookieBanner from '../components/CookieBanner.astro';
+import { SITE, NAV, LEGAL_NAV } from '../site';
 
 interface Props {
   title?: string;
@@ -15,6 +16,18 @@ const path = Astro.url.pathname;
 <html lang="es">
   <head>
     <meta charset="utf-8" />
+    <script is:inline>
+      // Google Consent Mode v2: nada de publicidad hasta que la persona elige en el aviso de cookies.
+      window.dataLayer = window.dataLayer || [];
+      function gtag() { dataLayer.push(arguments); }
+      gtag('consent', 'default', {
+        ad_storage: 'denied',
+        ad_user_data: 'denied',
+        ad_personalization: 'denied',
+        analytics_storage: 'denied',
+        wait_for_update: 500,
+      });
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
@@ -45,8 +58,13 @@ const path = Astro.url.pathname;
     <footer class="site-footer">
       <div class="wrap">
         <div><strong>eneuros</strong> · {SITE.tagline}</div>
+        <nav class="footer-links" aria-label="Información legal">
+          {LEGAL_NAV.map((item) => <a href={item.href}>{item.label}</a>)}
+          <a href="/cookies/" data-cookie-settings>Configurar cookies</a>
+        </nav>
         <div>© {new Date().getFullYear()} eneuros.es</div>
       </div>
     </footer>
+    <CookieBanner />
   </body>
 </html>

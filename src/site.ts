@@ -27,3 +27,19 @@ export const DATOS = [
   { slug: 'ipc', title: 'IPC e inflación', desc: 'Último dato del INE y evolución de los precios.' },
   { slug: 'gasolina', title: 'Precio de la gasolina', desc: 'Precio medio de gasolina y diésel en España.' },
 ];
+
+// Datos del titular de la web. La ley (LSSI) obliga a mostrarlos en el aviso legal.
+export const TITULAR = {
+  nombre: 'Elías García Sánchez',
+  nif: '53778829E',
+  domicilio: 'C/ Torcuato Fernández Miranda nº 12, 7º D, 33203 Gijón (Asturias)',
+  email: 'gijonia0931@gmail.com',
+};
+
+export const LEGAL_ACTUALIZADO = '14 de octubre de 2026';
+
+export const LEGAL_NAV = [
+  { href: '/aviso-legal/', label: 'Aviso legal' },
+  { href: '/privacidad/', label: 'Privacidad' },
+  { href: '/cookies/', label: 'Cookies' },
+];
