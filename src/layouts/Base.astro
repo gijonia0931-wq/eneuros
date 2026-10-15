@@ -6,11 +6,39 @@ import { SITE, NAV, LEGAL_NAV, ADSENSE } from '../site';
 interface Props {
   title?: string;
   description?: string;
+  // Artículos: og:type "article" con sus fechas.
+  article?: { published: Date; modified?: Date };
+  // Datos estructurados (schema.org) propios de la página, además del sitio y las migas de pan.
+  jsonLd?: Record<string, unknown>[];
 }
-const { title, description = SITE.description } = Astro.props;
+const { title, description = SITE.description, article, jsonLd = [] } = Astro.props;
 const fullTitle = title ? `${title} | ${SITE.name}` : `${SITE.name}: ${SITE.tagline}`;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const path = Astro.url.pathname;
+const ogImage = new URL('/og.png', Astro.site);
+
+// Migas de pan para Google a partir de la URL: Inicio > Sección > Página.
+const SECCIONES: Record<string, string> = Object.fromEntries(NAV.map((n) => [n.href.replaceAll('/', ''), n.label]));
+const partes = path.split('/').filter(Boolean);
+const migas = [{ name: 'Inicio', url: new URL('/', Astro.site).href }];
+if (partes[0] && SECCIONES[partes[0]]) migas.push({ name: SECCIONES[partes[0]], url: new URL(`/${partes[0]}/`, Astro.site).href });
+if (partes.length > 1 && title) migas.push({ name: title, url: canonical.href });
+const datos = [
+  ...(path === '/'
+    ? [
+        { '@context': 'https://schema.org', '@type': 'WebSite', name: SITE.name, url: new URL('/', Astro.site).href, inLanguage: 'es-ES', description: SITE.description },
+        { '@context': 'https://schema.org', '@type': 'Organization', name: SITE.name, url: new URL('/', Astro.site).href, logo: ogImage.href },
+      ]
+    : []),
+  ...(migas.length > 1
+    ? [{
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: migas.map((m, i) => ({ '@type': 'ListItem', position: i + 1, name: m.name, item: m.url })),
+      }]
+    : []),
+  ...jsonLd,
+];
 ---
 <!doctype html>
 <html lang="es">
@@ -34,12 +62,20 @@ const path = Astro.url.pathname;
     <link rel="canonical" href={canonical} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="sitemap" href="/sitemap-index.xml" />
-    <meta property="og:type" content="website" />
+    <link rel="alternate" type="application/rss+xml" title={SITE.name} href="/rss.xml" />
+    <meta property="og:type" content={article ? 'article' : 'website'} />
     <meta property="og:locale" content="es_ES" />
     <meta property="og:site_name" content={SITE.name} />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    {article && <meta property="article:published_time" content={article.published.toISOString()} />}
+    {article?.modified && <meta property="article:modified_time" content={article.modified.toISOString()} />}
+    {datos.map((d) => <script type="application/ld+json" set:html={JSON.stringify(d)} />)}
     {ADSENSE.client && (
       <>
         <meta name="google-adsense-account" content={ADSENSE.client} />
