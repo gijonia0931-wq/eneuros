@@ -1,0 +1,200 @@
+---
+import Base from '../../layouts/Base.astro';
+import NewsletterBox from '../../components/NewsletterBox.astro';
+import { INDICES_ALQUILER as IND, TOPE_ALQUILER as TOPE } from '../../site';
+import { actualizarAlquiler } from '../../calc/alquiler';
+import { euros, porcentaje } from '../../calc/formato';
+
+// Valores iniciales: el ejemplo de la guía (900 € y contrato firmado desde mayo de 2023 con el índice del INE).
+const INICIAL = { renta: 900, firma: 'desde2023', clausula: 'irav' } as const;
+const fmtNum = (n: number) => n.toLocaleString('es-ES', { maximumFractionDigits: 3 });
+const datos = (renta: number, ipc = IND.ipc, irav = IND.irav) => ({
+  renta, ipc, irav, superaReferencia: false, tope: TOPE,
+});
+const r = actualizarAlquiler({ ...datos(INICIAL.renta), firma: INICIAL.firma, clausula: INICIAL.clausula });
+const ejemplos = [
+  { caso: 'Firmado desde mayo de 2023 (índice del INE)', firma: 'desde2023', clausula: 'irav' },
+  { caso: 'Firmado desde mayo de 2023, dice IPC', firma: 'desde2023', clausula: 'ipc' },
+  { caso: 'Anterior a mayo de 2023, dice IPC', firma: 'antes2023', clausula: 'ipc' },
+  { caso: 'Sin cláusula de actualización', firma: 'desde2023', clausula: 'ninguna' },
+] as const;
+---
+<Base
+  title="Calculadora para actualizar el alquiler con el IPC"
+  description={`Calcula cuánto te pueden subir el alquiler este año: IPC (${porcentaje(IND.ipc)}), índice del INE para alquileres (${porcentaje(IND.irav)}) y el tope del ${TOPE.porcentaje} %.`}
+>
+  <h1>Calculadora para actualizar el alquiler con el IPC</h1>
+  <p class="lead">Comprueba cuánto te pueden subir el alquiler cuando tu contrato cumple años, con los últimos datos oficiales y los límites que marca la ley.</p>
+
+  <div class="calc section">
+    <form class="calc-form" id="calc-alquiler" novalidate onsubmit="return false" data-tope={JSON.stringify({ vigente: TOPE.vigente, porcentaje: TOPE.porcentaje })}>
+      <label class="calc-field">
+        <span>Renta que pagas ahora</span>
+        <span class="calc-input"><input name="renta" inputmode="decimal" autocomplete="off" value={fmtNum(INICIAL.renta)} /><span>€ al mes</span></span>
+      </label>
+
+      <fieldset class="calc-modo">
+        <legend>¿Cuándo firmaste el contrato?</legend>
+        <label><input type="radio" name="firma" value="desde2023" checked /> Desde el 26 de mayo de 2023</label>
+        <label><input type="radio" name="firma" value="antes2023" /> Antes</label>
+      </fieldset>
+
+      <fieldset class="calc-opciones">
+        <legend>¿Qué dice el contrato sobre subir la renta?</legend>
+        <label><input type="radio" name="clausula" value="irav" checked /> Que se actualiza con el índice del INE, o no dice con qué índice</label>
+        <label><input type="radio" name="clausula" value="ipc" /> Que se actualiza con el IPC</label>
+        <label><input type="radio" name="clausula" value="ninguna" /> No dice nada de actualizar la renta</label>
+      </fieldset>
+
+      {TOPE.vigente && (
+        <label class="calc-check">
+          <input type="checkbox" name="supera" />
+          <span>Mi renta supera el precio de referencia oficial de mi zona <small>(solo si lo has comprobado; en la mayoría de los casos no)</small></span>
+        </label>
+      )}
+
+      <details class="calc-avanzado">
+        <summary>Cambiar los índices</summary>
+        <label class="calc-field">
+          <span>IPC (tasa anual)</span>
+          <span class="calc-input"><input name="ipc" inputmode="decimal" autocomplete="off" value={fmtNum(IND.ipc)} /><span>%</span></span>
+        </label>
+        <label class="calc-field">
+          <span>Índice del INE para alquileres (IRAV)</span>
+          <span class="calc-input"><input name="irav" inputmode="decimal" autocomplete="off" value={fmtNum(IND.irav)} /><span>%</span></span>
+        </label>
+        <small>Vienen puestos los últimos datos del INE ({IND.mes}). Si tu contrato cumplió años antes, usa el dato que estaba publicado ese día.</small>
+      </details>
+    </form>
+
+    <div class="calc-result" aria-live="polite">
+      <p class="calc-error" data-out="error" hidden></p>
+      <div data-out="ok">
+        <div class="calc-label">Tu nueva renta, como mucho</div>
+        <div class="calc-big" data-out="nueva">{euros(r.rentaNueva)}</div>
+        <div class="calc-sub" data-out="resumen">Subida máxima del {porcentaje(r.porcentaje)}</div>
+        <dl class="calc-stats">
+          <div><dt>Subida al mes</dt><dd data-out="mes">{euros(r.subidaMes)}</dd></div>
+          <div><dt>Subida al año</dt><dd data-out="anio">{euros(r.subidaMes * 12)}</dd></div>
+        </dl>
+        <ul class="calc-motivos" data-out="motivos">
+          {r.motivos.map((m) => <li>{m}</li>)}
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  {TOPE.vigente && (
+    <p class="calc-aviso section">
+      <strong>Tope extraordinario del {TOPE.porcentaje} %.</strong> El <a href={TOPE.boe}>{TOPE.norma}</a> limita las subidas de alquiler de vivienda que toquen entre el {TOPE.desde} y el {TOPE.hasta}. Es una norma urgente que el Congreso tiene que convalidar; si dejara de estar en vigor, actualizaremos la calculadora.
+    </p>
+  )}
+
+  <section class="section prose">
+    <p class="calc-nota">Resultado orientativo. Si tu contrato tiene cláusulas poco claras o no estás de acuerdo con la subida, consulta la oficina de vivienda de tu comunidad autónoma.</p>
+  </section>
+
+  <article class="section prose">
+    <h2>Cómo usar la calculadora</h2>
+    <ol>
+      <li><strong>Escribe la renta que pagas ahora</strong> cada mes, sin gastos de comunidad ni suministros si los pagas aparte.</li>
+      <li><strong>Busca la fecha de firma</strong> en la primera página del contrato. La Ley de Vivienda cambió las reglas para los contratos firmados desde el 26 de mayo de 2023.</li>
+      <li><strong>Busca la cláusula de "actualización de la renta".</strong> Mira si nombra el IPC, el índice del INE o ninguno. Si no hay cláusula, la renta no se puede subir mientras dure el contrato.</li>
+      <li><strong>Los índices ya vienen puestos</strong> con los últimos datos del INE ({IND.mes}): IPC del {porcentaje(IND.ipc)} y IRAV del {porcentaje(IND.irav)}. Si tu contrato cumplió años hace meses, puedes cambiarlos por los que estaban publicados entonces.</li>
+    </ol>
+
+    <h2>El mismo alquiler, cuatro contratos distintos</h2>
+    <p>Con una renta de 900 € al mes y los datos de {IND.mes}, la subida máxima cambia mucho según el contrato:</p>
+    <div class="table-wrap">
+      <table class="calc-table">
+        <thead><tr><th>Contrato</th><th>Subida</th><th>Renta nueva</th></tr></thead>
+        <tbody>
+          {ejemplos.map((e) => {
+            const x = actualizarAlquiler({ ...datos(900), firma: e.firma, clausula: e.clausula });
+            return <tr><td>{e.caso}</td><td>{porcentaje(x.porcentaje)}</td><td>{euros(x.rentaNueva)}</td></tr>;
+          })}
+        </tbody>
+      </table>
+    </div>
+    {TOPE.vigente && <p>Con el tope del {TOPE.porcentaje} % en vigor, casi todos los casos acaban en el mismo sitio: como mucho 18 € más al mes. Sin ese tope, el contrato anterior a 2023 con cláusula de IPC podría subir un {porcentaje(IND.ipc)}, es decir, {euros(900 * IND.ipc / 100)} más al mes.</p>}
+
+    <h2>IPC o índice del INE: cuál te toca</h2>
+    <p>El <strong>IPC</strong> mide cuánto suben los precios en general (lo explicamos en <a href="/guias/que-es-el-ipc/">qué es el IPC</a>). El <strong>Índice de Referencia de Arrendamientos de Vivienda (IRAV)</strong> lo publica el INE cada mes desde 2025 solo para los alquileres, y suele quedar por debajo del IPC cuando la inflación sube.</p>
+    <ul>
+      <li><strong>Contratos firmados desde el 26 de mayo de 2023:</strong> la subida nunca puede pasar del IRAV, aunque el contrato diga IPC.</li>
+      <li><strong>Contratos anteriores:</strong> se aplica lo que diga su cláusula, normalmente el IPC.</li>
+      <li><strong>Sin cláusula de actualización:</strong> no hay subida durante el contrato y sus prórrogas.</li>
+    </ul>
+    <p>Lo explicamos con más detalle en <a href="/guias/actualizar-alquiler-ipc/">subida anual del alquiler: IPC, IRAV y tope del 2 %</a>.</p>
+
+    <h2>Qué dato del índice se usa</h2>
+    <p>Se usa el último dato publicado el día en que el contrato cumple años. El INE publica cada índice a mediados del mes siguiente: si tu contrato cumple años el 1 de noviembre, el último dato publicado ese día es el de septiembre.</p>
+
+    <h2>Cómo te tiene que avisar el casero</h2>
+    <p>La subida se comunica <strong>por escrito</strong>, indicando el porcentaje aplicado, y solo se cobra <strong>desde el mes siguiente al aviso</strong>. Si te avisa tarde, no puede cobrarte con efecto retroactivo. Tienes derecho a pedir el certificado oficial del INE con el índice usado.</p>
+
+    <h2>Preguntas frecuentes</h2>
+    <h3>¿Me pueden subir más si firmo un contrato nuevo?</h3>
+    <p>Estos límites son para la actualización anual dentro del mismo contrato y sus prórrogas. Al firmar un contrato nuevo se pacta una renta nueva, aunque en zonas de mercado tensionado también hay límites.</p>
+    <h3>¿Y si el IPC baja?</h3>
+    <p>Si el índice que te toca es negativo, la cuenta daría una bajada de la renta. La calculadora solo muestra subidas; en ese caso, revisa lo que dice tu contrato.</p>
+    <h3>¿Puedo aceptar una subida mayor?</h3>
+    <p>Mientras rija el tope extraordinario, casero e inquilino pueden acordar otra subida, pero nadie te puede obligar a aceptar más del {TOPE.porcentaje} %. Si no aceptas, se queda como mucho en ese porcentaje.</p>
+    <h3>¿Cuánto alquiler me puedo permitir?</h3>
+    <p>Como referencia, lo recomendable es que no pase del 30 % de tus ingresos netos. Lo calculamos en <a href="/guias/cuanto-alquiler-puedo-pagar/">cuánto alquiler puedo pagar</a>.</p>
+  </article>
+
+  <div class="section"><NewsletterBox /></div>
+</Base>
+
+<script>
+  import { actualizarAlquiler, type Firma, type Clausula } from '../../calc/alquiler';
+  import { leerNumero, euros, porcentaje } from '../../calc/formato';
+
+  const form = document.getElementById('calc-alquiler') as HTMLFormElement;
+  const tope = JSON.parse(form.dataset.tope!);
+  const out = (name: string) => document.querySelector(`[data-out="${name}"]`) as HTMLElement;
+  const valor = (name: string) => (form.elements.namedItem(name) as HTMLInputElement | RadioNodeList | null)?.value ?? '';
+
+  function error(msg: string) {
+    out('error').textContent = msg;
+    out('error').hidden = false;
+    out('ok').hidden = true;
+  }
+
+  function recalcular() {
+    const renta = leerNumero(valor('renta'));
+    const ipc = leerNumero(valor('ipc'));
+    const irav = leerNumero(valor('irav'));
+    if (!(renta > 0)) return error('Escribe la renta que pagas ahora.');
+    if (!(Number.isFinite(ipc) && Number.isFinite(irav) && Math.abs(ipc) <= 30 && Math.abs(irav) <= 30))
+      return error('Revisa los índices: escribe el porcentaje, por ejemplo 2,54.');
+
+    out('error').hidden = true;
+    out('ok').hidden = false;
+    const supera = form.elements.namedItem('supera') as HTMLInputElement | null;
+    const r = actualizarAlquiler({
+      renta,
+      ipc,
+      irav,
+      firma: valor('firma') as Firma,
+      clausula: valor('clausula') as Clausula,
+      superaReferencia: !!supera?.checked,
+      tope,
+    });
+    out('nueva').textContent = euros(r.rentaNueva);
+    out('resumen').textContent = r.porcentaje > 0 ? `Subida máxima del ${porcentaje(Math.round(r.porcentaje * 100) / 100)}` : 'Este año no te pueden subir la renta';
+    out('mes').textContent = euros(r.subidaMes);
+    out('anio').textContent = euros(r.subidaMes * 12);
+    out('motivos').innerHTML = '';
+    r.motivos.forEach((m) => {
+      const li = document.createElement('li');
+      li.textContent = m;
+      out('motivos').append(li);
+    });
+  }
+
+  form.addEventListener('input', recalcular);
+  form.addEventListener('change', recalcular);
+  recalcular();
+</script>
