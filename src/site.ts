@@ -34,7 +34,7 @@ export const TOPE_ALQUILER = {
 export const CALCULADORAS = [
   { slug: 'hipoteca', title: 'Hipoteca y Euríbor', desc: 'Cuánto pagarás al mes y cómo te afecta la subida o bajada del Euríbor.', disponible: true },
   { slug: 'alquiler-ipc', title: 'Actualizar alquiler con el IPC', desc: 'Calcula la nueva renta de tu alquiler según el IPC o el índice oficial.', disponible: true },
-  { slug: 'sueldo-neto', title: 'Sueldo neto 2026', desc: 'De bruto a neto: IRPF y Seguridad Social con las tablas de 2026.' },
+  { slug: 'sueldo-neto', title: 'Sueldo neto 2026', desc: 'De bruto a neto: IRPF y Seguridad Social con las tablas de 2026.', disponible: true },
   { slug: 'factura-luz', title: 'Factura de la luz', desc: 'Compara PVPC y mercado libre según tu consumo y potencia.' },
   { slug: 'interes-compuesto', title: 'Interés compuesto', desc: 'Cuánto crece tu ahorro con aportaciones mensuales y rentabilidad.' },
 ];
@@ -67,7 +67,7 @@ export const LEGAL_NAV = [
 // Temas de las guías: ordenan el índice de /guias/ y las "guías relacionadas" de cada artículo.
 export const TEMAS_GUIAS = [
   { titulo: 'Hipoteca y vivienda', calculadora: 'hipoteca', guias: ['que-es-el-euribor', 'hipoteca-fija-variable-o-mixta', 'como-se-calcula-la-cuota-de-la-hipoteca', 'tin-y-tae-diferencias', 'amortizar-hipoteca-cuota-o-plazo', 'gastos-de-comprar-una-vivienda'] },
-  { titulo: 'Nómina e impuestos', guias: ['sueldo-bruto-a-neto', 'tramos-irpf', 'retenciones-irpf-nomina', 'pagas-extra-prorrateadas'] },
+  { titulo: 'Nómina e impuestos', calculadora: 'sueldo-neto', guias: ['sueldo-bruto-a-neto', 'tramos-irpf', 'retenciones-irpf-nomina', 'pagas-extra-prorrateadas'] },
   { titulo: 'Alquiler', calculadora: 'alquiler-ipc', guias: ['actualizar-alquiler-ipc', 'fianza-del-alquiler', 'cuanto-alquiler-puedo-pagar'] },
   { titulo: 'Factura de la luz', guias: ['como-leer-la-factura-de-la-luz', 'pvpc-o-mercado-libre', 'tramos-horarios-luz', 'potencia-contratada-luz'] },
   { titulo: 'Ahorro y presupuesto', guias: ['regla-50-30-20', 'fondo-de-emergencia', 'interes-compuesto', 'depositos-y-cuentas-remuneradas', 'letras-del-tesoro', 'que-es-el-ipc'] },

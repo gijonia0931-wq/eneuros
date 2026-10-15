@@ -1,0 +1,215 @@
+---
+import Base from '../../layouts/Base.astro';
+import NewsletterBox from '../../components/NewsletterBox.astro';
+import { calcularSueldo, type DatosSueldo } from '../../calc/sueldo';
+import { euros, eurosRedondo, porcentaje } from '../../calc/formato';
+
+// Valores iniciales: el ejemplo de la guía "Sueldo bruto a neto" (30.000 € en 12 pagas, sin hijos).
+const BASE: Omit<DatosSueldo, 'bruto'> = {
+  pagas: 12, contrato: 'indefinido', situacion: 'otras', edad: 'menos65', discapacidad: 'no',
+  hijos: 0, hijosMenores3: 0, hijosAMedias: false,
+};
+const INICIAL = 30000;
+const r = calcularSueldo({ ...BASE, bruto: INICIAL });
+const TABLA = [15000, 18000, 20000, 25000, 30000, 35000, 40000, 50000, 60000];
+---
+<Base
+  title="Calculadora de sueldo neto 2026"
+  description="Pasa tu sueldo de bruto a neto con las tablas oficiales de 2026: retención de IRPF, Seguridad Social y lo que cobrarás cada mes en 12 o 14 pagas."
+>
+  <h1>Calculadora de sueldo neto 2026</h1>
+  <p class="lead">Calcula cuánto cobrarás de verdad cada mes a partir de tu sueldo bruto, con la retención de IRPF y las cotizaciones de 2026.</p>
+
+  <div class="calc section">
+    <form class="calc-form" id="calc-sueldo" novalidate onsubmit="return false">
+      <label class="calc-field">
+        <span>Sueldo bruto al año</span>
+        <span class="calc-input"><input name="bruto" inputmode="decimal" autocomplete="off" value="30.000" /><span>€</span></span>
+        <small>Lo que pone en tu contrato, antes de descuentos.</small>
+      </label>
+
+      <fieldset class="calc-modo">
+        <legend>¿En cuántas pagas cobras?</legend>
+        <label><input type="radio" name="pagas" value="12" checked /> 12 pagas</label>
+        <label><input type="radio" name="pagas" value="14" /> 14 pagas</label>
+      </fieldset>
+
+      <label class="calc-field">
+        <span>Tipo de contrato</span>
+        <select name="contrato" class="calc-select">
+          <option value="indefinido">Indefinido</option>
+          <option value="temporal">Temporal de un año o más</option>
+          <option value="corto">Temporal de menos de un año</option>
+        </select>
+      </label>
+
+      <label class="calc-field">
+        <span>Situación familiar</span>
+        <select name="situacion" class="calc-select">
+          <option value="otras">Sin pareja a cargo</option>
+          <option value="conyuge">Casado/a, pareja a cargo</option>
+          <option value="monoparental">Familia monoparental</option>
+        </select>
+        <small>"Pareja a cargo": tu cónyuge gana menos de 1.500 € al año. "Monoparental": vives solo/a con tus hijos.</small>
+      </label>
+
+      <div class="calc-dos">
+        <label class="calc-field">
+          <span>Hijos menores de 25</span>
+          <span class="calc-input"><input name="hijos" inputmode="numeric" autocomplete="off" value="0" /></span>
+        </label>
+        <label class="calc-field">
+          <span>De ellos, menores de 3 años</span>
+          <span class="calc-input"><input name="menores3" inputmode="numeric" autocomplete="off" value="0" /></span>
+        </label>
+      </div>
+
+      <label class="calc-check" data-si-hijos hidden>
+        <input type="checkbox" name="aMedias" />
+        <span>Los hijos cuentan a medias con el otro progenitor <small>(lo normal si estáis casados o vivís juntos y ambos trabajáis)</small></span>
+      </label>
+
+      <details class="calc-avanzado">
+        <summary>Edad y discapacidad</summary>
+        <label class="calc-field">
+          <span>Tu edad</span>
+          <select name="edad" class="calc-select">
+            <option value="menos65">Menos de 65 años</option>
+            <option value="de65a74">De 65 a 74 años</option>
+            <option value="desde75">75 años o más</option>
+          </select>
+        </label>
+        <label class="calc-field">
+          <span>Discapacidad reconocida</span>
+          <select name="discapacidad" class="calc-select">
+            <option value="no">No</option>
+            <option value="de33a65">Del 33 % al 64 %</option>
+            <option value="desde65">Del 65 % o más</option>
+          </select>
+        </label>
+      </details>
+    </form>
+
+    <div class="calc-result" aria-live="polite">
+      <p class="calc-error" data-out="error" hidden></p>
+      <div data-out="ok">
+        <div class="calc-label">Cobrarás al mes</div>
+        <div class="calc-big" data-out="mes">{euros(r.netoMes)}</div>
+        <div class="calc-sub" data-out="extra">En 12 pagas, con las extras repartidas en cada nómina</div>
+        <dl class="calc-stats">
+          <div><dt>Sueldo neto al año</dt><dd data-out="anual">{eurosRedondo(r.netoAnual)}</dd></div>
+          <div><dt>Retención de IRPF</dt><dd data-out="tipo">{porcentaje(r.tipoIRPF)}</dd></div>
+          <div><dt>IRPF al año</dt><dd data-out="irpf">{eurosRedondo(r.irpf)}</dd></div>
+          <div><dt>Seguridad Social al año</dt><dd data-out="ss">{eurosRedondo(r.seguridadSocial)}</dd></div>
+        </dl>
+        <p class="calc-esfuerzo" data-out="nota" hidden></p>
+      </div>
+    </div>
+  </div>
+
+  <section class="section prose">
+    <p class="calc-nota">Resultado orientativo para trabajadores por cuenta ajena en el régimen general, con el algoritmo oficial de retenciones de 2026 de la Agencia Tributaria. No incluye casos especiales como Ceuta, Melilla o La Palma, pensiones compensatorias, ascendientes a cargo ni hipotecas anteriores a 2013. Tu empresa puede aplicar una retención algo distinta si tiene datos que aquí no se piden.</p>
+  </section>
+
+  <article class="section prose">
+    <h2>Qué te descuentan de la nómina</h2>
+    <p>Entre tu sueldo bruto y lo que te llega a la cuenta hay dos descuentos:</p>
+    <ul>
+      <li><strong>Seguridad Social:</strong> en 2026, un {porcentaje(6.5)} de tu sueldo si tu contrato es indefinido (un {porcentaje(6.55)} si es temporal). Paga tu futura pensión, el paro, las bajas y la formación. Si cobras más de 5.101,20 € al mes, por encima de esa cifra solo pagas una pequeña cotización de solidaridad.</li>
+      <li><strong>Retención de IRPF:</strong> un adelanto del impuesto sobre la renta que tu empresa ingresa en Hacienda por ti. El porcentaje depende de lo que ganas y de tu situación familiar, y se ajusta en la declaración de la renta.</li>
+    </ul>
+    <p>Lo explicamos con un ejemplo completo en <a href="/guias/sueldo-bruto-a-neto/">sueldo bruto a neto en 2026</a>.</p>
+
+    <h2>Sueldo neto según el bruto</h2>
+    <p>Para una persona sin hijos, con contrato indefinido y menos de 65 años:</p>
+    <div class="table-wrap">
+      <table class="calc-table">
+        <thead><tr><th>Bruto al año</th><th>Retención IRPF</th><th>Neto al año</th><th>Al mes (12 pagas)</th><th>Al mes (14 pagas)</th></tr></thead>
+        <tbody>
+          {TABLA.map((b) => {
+            const x12 = calcularSueldo({ ...BASE, bruto: b });
+            const x14 = calcularSueldo({ ...BASE, bruto: b, pagas: 14 });
+            return <tr><td>{eurosRedondo(b)}</td><td>{porcentaje(x12.tipoIRPF)}</td><td>{eurosRedondo(x12.netoAnual)}</td><td>{euros(x12.netoMes)}</td><td>{euros(x14.netoMes)}</td></tr>;
+          })}
+        </tbody>
+      </table>
+    </div>
+    <p>Fíjate en los sueldos bajos: por debajo de 15.876 € al año (en este perfil) no te retienen IRPF, y justo por encima la retención sube poco a poco para que nadie cobre menos por ganar algo más.</p>
+
+    <h2>12 o 14 pagas: cobras lo mismo al año</h2>
+    <p>Con 14 pagas, cada nómina es más pequeña, pero en junio y diciembre (o cuando diga tu convenio) cobras una paga extra. Al final del año el neto es el mismo. En la paga extra no te descuentan Seguridad Social, porque ya se cotiza repartida en las nóminas de cada mes. Más detalles en <a href="/guias/pagas-extra-prorrateadas/">pagas extra prorrateadas o no</a>.</p>
+
+    <h2>Por qué tus hijos o tu pareja cambian la retención</h2>
+    <p>Hacienda deja sin impuesto una parte de tus ingresos que considera necesaria para vivir: el <strong>mínimo personal y familiar</strong>. Son 5.550 € por ti, más 2.400 € por el primer hijo, 2.700 € por el segundo, 4.000 € por el tercero y 4.500 € por cada uno de los siguientes, y 2.800 € más por cada hijo menor de 3 años. Si compartes los hijos con el otro progenitor, cada uno cuenta la mitad. Cuanto mayor es ese mínimo, menor es tu retención.</p>
+    <p>Para entender por qué el porcentaje sube cuando ganas más, lee <a href="/guias/tramos-irpf/">los tramos del IRPF en 2026</a>. Y si quieres que te retengan más para no pagar en la renta, mira <a href="/guias/retenciones-irpf-nomina/">cómo cambiar tu retención</a>.</p>
+
+    <h2>Preguntas frecuentes</h2>
+    <h3>¿Por qué mi nómina no coincide exactamente?</h3>
+    <p>Tu empresa puede tener datos que aquí no se piden (un segundo pagador, cambios de sueldo a mitad de año, horas extra o pluses) y regulariza la retención cuando algo cambia. La diferencia debería ser pequeña. Revisa también que tu empresa tenga actualizado tu modelo 145.</p>
+    <h3>¿Influye la comunidad autónoma?</h3>
+    <p>En la nómina no: la retención usa la misma escala en todo el régimen común. Donde sí influye es en la declaración de la renta, que aplica la escala y las deducciones de tu comunidad.</p>
+    <h3>¿Esto es lo que pagaré en la renta?</h3>
+    <p>No exactamente. La retención es un adelanto. En la declaración se suman todos tus ingresos del año y se aplican las deducciones, así que te puede salir a devolver o a pagar.</p>
+    <h3>¿Sirve para autónomos?</h3>
+    <p>No. Los autónomos pagan una cuota según sus rendimientos y otro sistema de pagos a cuenta. Esta calculadora es para personas con nómina.</p>
+  </article>
+
+  <div class="section"><NewsletterBox /></div>
+</Base>
+
+<script>
+  import { calcularSueldo, type Contrato, type Situacion, type Edad, type Discapacidad } from '../../calc/sueldo';
+  import { leerNumero, euros, eurosRedondo, porcentaje } from '../../calc/formato';
+
+  const form = document.getElementById('calc-sueldo') as HTMLFormElement;
+  const out = (name: string) => document.querySelector(`[data-out="${name}"]`) as HTMLElement;
+  const valor = (name: string) => (form.elements.namedItem(name) as HTMLInputElement | RadioNodeList).value;
+
+  function error(msg: string) {
+    out('error').textContent = msg;
+    out('error').hidden = false;
+    out('ok').hidden = true;
+  }
+
+  function recalcular() {
+    const bruto = leerNumero(valor('bruto'));
+    const hijos = leerNumero(valor('hijos') || '0');
+    const menores3 = leerNumero(valor('menores3') || '0');
+    const situacion = valor('situacion') as Situacion;
+    (document.querySelector('[data-si-hijos]') as HTMLElement).hidden = !(hijos > 0) || situacion === 'monoparental';
+
+    if (!(bruto > 0 && bruto <= 1e7)) return error('Escribe tu sueldo bruto al año.');
+    if (!(Number.isInteger(hijos) && hijos >= 0 && hijos <= 15)) return error('Escribe cuántos hijos tienes (0 si ninguno).');
+    if (!(Number.isInteger(menores3) && menores3 >= 0 && menores3 <= hijos)) return error('Los hijos menores de 3 años no pueden ser más que el total de hijos.');
+    if (situacion === 'monoparental' && hijos === 0) return error('Para familia monoparental indica cuántos hijos viven contigo.');
+
+    out('error').hidden = true;
+    out('ok').hidden = false;
+    const pagas = valor('pagas') === '14' ? 14 : 12;
+    const r = calcularSueldo({
+      bruto,
+      pagas,
+      contrato: valor('contrato') as Contrato,
+      situacion,
+      edad: valor('edad') as Edad,
+      discapacidad: valor('discapacidad') as Discapacidad,
+      hijos,
+      hijosMenores3: menores3,
+      hijosAMedias: (form.elements.namedItem('aMedias') as HTMLInputElement).checked,
+    });
+    out('mes').textContent = euros(r.netoMes);
+    out('extra').textContent =
+      pagas === 14 ? `En 14 pagas: además, 2 pagas extra de ${euros(r.netoExtra)}` : 'En 12 pagas, con las extras repartidas en cada nómina';
+    out('anual').textContent = eurosRedondo(r.netoAnual);
+    out('tipo').textContent = porcentaje(r.tipoIRPF);
+    out('irpf').textContent = eurosRedondo(r.irpf);
+    out('ss').textContent = eurosRedondo(r.seguridadSocial);
+    const nota = out('nota');
+    nota.hidden = !r.exento;
+    if (r.exento) nota.textContent = 'Con este sueldo y tu situación familiar no te tienen que retener IRPF en la nómina.';
+  }
+
+  form.addEventListener('input', recalcular);
+  form.addEventListener('change', recalcular);
+  recalcular();
+</script>
