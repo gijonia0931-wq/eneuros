@@ -110,7 +110,7 @@ export const LEGAL_NAV = [
 // Temas de las guías: ordenan el índice de /guias/ y las "guías relacionadas" de cada artículo.
 export const TEMAS_GUIAS = [
   { titulo: 'Hipoteca y vivienda', calculadora: 'hipoteca', guias: ['que-es-el-euribor', 'hipoteca-fija-variable-o-mixta', 'como-se-calcula-la-cuota-de-la-hipoteca', 'tin-y-tae-diferencias', 'amortizar-hipoteca-cuota-o-plazo', 'gastos-de-comprar-una-vivienda'] },
-  { titulo: 'Nómina e impuestos', calculadora: 'sueldo-neto', guias: ['sueldo-bruto-a-neto', 'tramos-irpf', 'retenciones-irpf-nomina', 'pagas-extra-prorrateadas'] },
+  { titulo: 'Nómina e impuestos', calculadora: 'sueldo-neto', guias: ['salario-minimo-2026', 'sueldo-bruto-a-neto', 'tramos-irpf', 'retenciones-irpf-nomina', 'pagas-extra-prorrateadas'] },
   { titulo: 'Alquiler', calculadora: 'alquiler-ipc', guias: ['actualizar-alquiler-ipc', 'fianza-del-alquiler', 'cuanto-alquiler-puedo-pagar'] },
   { titulo: 'Factura de la luz', calculadora: 'factura-luz', guias: ['como-leer-la-factura-de-la-luz', 'pvpc-o-mercado-libre', 'tramos-horarios-luz', 'potencia-contratada-luz'] },
   { titulo: 'Ahorro y presupuesto', calculadora: 'interes-compuesto', guias: ['regla-50-30-20', 'fondo-de-emergencia', 'interes-compuesto', 'depositos-y-cuentas-remuneradas', 'letras-del-tesoro', 'que-es-el-ipc'] },
