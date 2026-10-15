@@ -45,7 +45,7 @@ Al año cobras lo mismo con 12 o con 14 pagas; solo cambia cuándo te llega (lo 
 
 Según tu situación familiar, puede que tu empresa te aplique una pequeña retención de IRPF cada mes. No es dinero perdido: al hacer la declaración de la renta, la deducción del SMI anula el impuesto y **Hacienda te devuelve lo retenido**. Por eso conviene presentar la declaración aunque no estés obligado.
 
-Puedes ver tu caso concreto en la [calculadora de sueldo neto](/calculadoras/sueldo-neto/), que aplica las tablas de retención de 2026. Ten en cuenta que muestra la retención de la nómina, no la devolución que recuperarás en la renta.
+Puedes ver tu caso concreto en la [calculadora de sueldo neto](/calculadoras/sueldo-neto/), que aplica las tablas de retención de 2026. Muestra la retención de la nómina y te avisa de la deducción que recuperarás en la renta.
 
 ## Qué pasa si cobras menos
 
