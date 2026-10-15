@@ -47,4 +47,5 @@ npm run dev
 
 - Cada calculadora es una página en `src/pages/calculadoras/<slug>.astro`, con sus cuentas en `src/calc/`.
 - Para que su tarjeta enlace a la página en vez de mostrar "Próximamente", pon `disponible: true` en `CALCULADORAS` (`src/site.ts`).
+- Los índices del alquiler (IPC e IRAV) están en `INDICES_ALQUILER` y el tope extraordinario del 2 % en `TOPE_ALQUILER` (`src/site.ts`). Si el tope deja de estar en vigor, pon `vigente: false`.
 - El Euríbor que usa la calculadora de hipoteca está en `EURIBOR` (`src/site.ts`): actualízalo cada mes con el dato oficial del Banco de España.
