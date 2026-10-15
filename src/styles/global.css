@@ -166,3 +166,11 @@ section[data-modo][hidden] { display: none; }
 .calc-select:focus { border-color: var(--brand); outline: 2px solid var(--brand-soft); }
 .calc-dos { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; align-items: end; }
 .calc-check[hidden] { display: none; }
+.calc-tarifa { border: 1px solid var(--line); border-radius: var(--radius); padding: 14px; margin: 0; display: grid; gap: 12px; }
+.calc-tarifa legend { font-weight: 700; padding: 0 6px; }
+.calc-tarifa[hidden], .calc-tres[hidden], .calc-field[hidden] { display: none; }
+.calc-tres { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.calc-tres .calc-input > span, .calc-tarifa .calc-dos .calc-input > span { padding: 0 8px; font-size: .8rem; }
+.calc-desglose { margin-top: 16px; }
+.calc-desglose td { border-bottom: 1px solid var(--line); }
+@media (max-width: 420px) { .calc-tres { grid-template-columns: minmax(0, 1fr); } }
