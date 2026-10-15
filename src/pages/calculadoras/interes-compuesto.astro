@@ -1,0 +1,201 @@
+---
+import Base from '../../layouts/Base.astro';
+import NewsletterBox from '../../components/NewsletterBox.astro';
+import { calcularInteres, type DatosInteres } from '../../calc/interes';
+import { euros, eurosRedondo, porcentaje } from '../../calc/formato';
+
+// Valores iniciales: el ejemplo de la guía (100 € al mes durante 20 años al 5 %, con un 2 % de inflación).
+const INICIAL: DatosInteres = { inicial: 0, mensual: 100, anios: 20, rentabilidad: 5, comision: 0, inflacion: 2 };
+const r = calcularInteres(INICIAL);
+const num = (n: number) => n.toLocaleString('es-ES', { maximumFractionDigits: 3 });
+const plazos = [10, 20, 30];
+const rentabilidades = [2, 5, 7];
+---
+<Base
+  title="Calculadora de interés compuesto"
+  description="Calcula cuánto crece tu ahorro con aportaciones mensuales y descubre cuánto te quitan las comisiones y la inflación."
+>
+  <h1>Calculadora de interés compuesto</h1>
+  <p class="lead">Descubre cuánto puede crecer tu ahorro si apartas una cantidad cada mes, y cuánto se queda por el camino en comisiones e inflación.</p>
+
+  <div class="calc section">
+    <form class="calc-form" id="calc-interes" novalidate onsubmit="return false">
+      <label class="calc-field">
+        <span>Dinero que ya tienes ahorrado</span>
+        <span class="calc-input"><input name="inicial" inputmode="decimal" autocomplete="off" value={num(INICIAL.inicial)} /><span>€</span></span>
+      </label>
+      <label class="calc-field">
+        <span>Lo que aportas cada mes</span>
+        <span class="calc-input"><input name="mensual" inputmode="decimal" autocomplete="off" value={num(INICIAL.mensual)} /><span>€ al mes</span></span>
+      </label>
+      <div class="calc-dos">
+        <label class="calc-field">
+          <span>Durante</span>
+          <span class="calc-input"><input name="anios" inputmode="decimal" autocomplete="off" value={num(INICIAL.anios)} /><span>años</span></span>
+        </label>
+        <label class="calc-field">
+          <span>Rentabilidad anual</span>
+          <span class="calc-input"><input name="rentabilidad" inputmode="decimal" autocomplete="off" value={num(INICIAL.rentabilidad)} /><span>%</span></span>
+        </label>
+      </div>
+      <div class="calc-dos">
+        <label class="calc-field">
+          <span>Comisiones al año</span>
+          <span class="calc-input"><input name="comision" inputmode="decimal" autocomplete="off" value={num(INICIAL.comision)} /><span>%</span></span>
+        </label>
+        <label class="calc-field">
+          <span>Inflación media</span>
+          <span class="calc-input"><input name="inflacion" inputmode="decimal" autocomplete="off" value={num(INICIAL.inflacion)} /><span>%</span></span>
+        </label>
+      </div>
+      <small class="calc-nota">La rentabilidad es una suposición: ningún producto sin riesgo garantiza un 5 % durante 20 años. Si no sabes las comisiones, búscalas como "gastos corrientes" o "coste total anual" en la ficha del producto.</small>
+    </form>
+
+    <div class="calc-result" aria-live="polite">
+      <p class="calc-error" data-out="error" hidden></p>
+      <div data-out="ok">
+        <div class="calc-label">Tendrás</div>
+        <div class="calc-big" data-out="final">{euros(r.final)}</div>
+        <div class="calc-sub" data-out="resumen">Al cabo de {num(INICIAL.anios)} años</div>
+        <dl class="calc-stats">
+          <div><dt>Has aportado</dt><dd data-out="aportado">{euros(r.aportado)}</dd></div>
+          <div><dt>Intereses ganados</dt><dd data-out="intereses">{euros(r.intereses)}</dd></div>
+          <div><dt>En euros de hoy</dt><dd data-out="hoy">{euros(r.enEurosDeHoy)}</dd></div>
+          <div><dt>Te cuestan las comisiones</dt><dd data-out="comision">{euros(r.costeComision)}</dd></div>
+        </dl>
+        <ul class="calc-motivos" data-out="motivos">
+          <li>Descontando la inflación, tu rentabilidad real es de un {porcentaje(Math.round(r.rentabilidadReal * 100) / 100)} al año.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <section class="section">
+    <details class="calc-cuadro">
+      <summary>Ver cómo crece tu ahorro año a año</summary>
+      <div class="table-wrap">
+        <table class="calc-table">
+          <thead><tr><th>Año</th><th>Has aportado</th><th>Tienes</th><th>De eso, intereses</th></tr></thead>
+          <tbody data-out="cuadro">
+            {r.evolucion.map((e) => (
+              <tr><td>{e.anio}</td><td>{euros(e.aportado)}</td><td>{euros(e.saldo)}</td><td>{euros(e.saldo - e.aportado)}</td></tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </details>
+  </section>
+
+  <section class="section prose">
+    <p class="calc-nota">Resultado orientativo, sin impuestos. Los intereses y las ganancias tributan en el IRPF (base del ahorro) cuando los cobras o vendes el producto. La rentabilidad de los productos con riesgo cambia cada año y puede ser negativa.</p>
+  </section>
+
+  <article class="section prose">
+    <h2>Cómo usar la calculadora</h2>
+    <ol>
+      <li><strong>Escribe lo que ya tienes ahorrado</strong>, si vas a partir de una cantidad. Si empiezas de cero, deja un 0.</li>
+      <li><strong>Pon lo que puedes apartar cada mes.</strong> La calculadora supone que lo aportas al final de cada mes, siempre la misma cantidad.</li>
+      <li><strong>Elige el plazo y la rentabilidad.</strong> Sé prudente: un depósito o una cuenta remunerada rinden hoy bastante menos que un fondo de acciones, que a cambio tiene años con pérdidas.</li>
+      <li><strong>Añade las comisiones y la inflación</strong> para ver lo que tendrás de verdad. La comisión se resta de la rentabilidad cada año, y la inflación te dice cuánto valdrá ese dinero en euros de hoy.</li>
+    </ol>
+
+    <h2>100 € al mes: lo que cambian el plazo y la rentabilidad</h2>
+    <p>Lo que tendrías aportando 100 € al mes, sin comisiones ni impuestos:</p>
+    <div class="table-wrap">
+      <table class="calc-table">
+        <thead><tr><th>Rentabilidad</th>{plazos.map((p) => <th>{p} años</th>)}</tr></thead>
+        <tbody>
+          {rentabilidades.map((t) => (
+            <tr><td>{porcentaje(t)} anual</td>{plazos.map((p) => <td>{eurosRedondo(calcularInteres({ ...INICIAL, anios: p, rentabilidad: t }).final)}</td>)}</tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <p>En 30 años has aportado 36.000 €. Con un 2 % llegas a unos 49.000 €; con un 7 %, a casi 117.000 €. El tiempo y la rentabilidad pesan más que la cantidad que apartas cada mes.</p>
+
+    <h2>Por qué importan tanto las comisiones</h2>
+    <p>Una comisión se resta de tu rentabilidad todos los años, así que también se compone, pero en tu contra. Con 100 € al mes durante 20 años, un producto que rinde un 5 % y cobra un 1,5 % anual te deja unos 6.100 € menos que uno sin comisiones. Pruébalo poniendo 1,5 en la casilla de comisiones.</p>
+
+    <h2>Qué significa "en euros de hoy"</h2>
+    <p>Dentro de 20 años las cosas costarán más. Si la inflación media es del 2 %, los precios serán casi 1,5 veces los de hoy, y tus 40.580 € comprarán lo mismo que unos 27.300 € ahora. Lo explicamos con detalle en <a href="/guias/interes-compuesto/">interés compuesto: qué es y cuánto hace crecer tu ahorro</a>.</p>
+
+    <h2>Preguntas frecuentes</h2>
+    <h3>¿Qué rentabilidad pongo?</h3>
+    <p>Depende de dónde vayas a meter el dinero. Para los productos sin riesgo, mira lo que pagan hoy los <a href="/guias/depositos-y-cuentas-remuneradas/">depósitos y cuentas remuneradas</a> o las <a href="/guias/letras-del-tesoro/">Letras del Tesoro</a>. Para inversiones a largo plazo, usa una cifra prudente y prueba varias.</p>
+    <h3>¿Cuánto tarda mi dinero en duplicarse?</h3>
+    <p>Divide 72 entre la rentabilidad anual: al 5 %, unos 14 años; al 2 %, unos 36. Es la llamada regla del 72, una aproximación que funciona bien entre el 2 % y el 10 %.</p>
+    <h3>¿Qué debería tener antes de invertir?</h3>
+    <p>Un <a href="/guias/fondo-de-emergencia/">fondo de emergencia</a> para los imprevistos, de modo que no tengas que sacar el dinero invertido en un mal momento. Si no sabes cuánto puedes apartar cada mes, la <a href="/guias/regla-50-30-20/">regla 50/30/20</a> es un buen punto de partida.</p>
+  </article>
+
+  <div class="section"><NewsletterBox /></div>
+</Base>
+
+<script>
+  import { calcularInteres } from '../../calc/interes';
+  import { leerNumero, euros, porcentaje } from '../../calc/formato';
+
+  const form = document.getElementById('calc-interes') as HTMLFormElement;
+  const out = (name: string) => document.querySelector(`[data-out="${name}"]`) as HTMLElement;
+  const valor = (name: string) => (form.elements.namedItem(name) as HTMLInputElement).value;
+  const fmt = (n: number) => n.toLocaleString('es-ES', { maximumFractionDigits: 2 });
+
+  function error(msg: string) {
+    out('error').textContent = msg;
+    out('error').hidden = false;
+    out('ok').hidden = true;
+  }
+
+  function recalcular() {
+    const vacio0 = (n: string) => (valor(n).trim() === '' ? 0 : leerNumero(valor(n)));
+    const inicial = vacio0('inicial');
+    const mensual = vacio0('mensual');
+    const anios = leerNumero(valor('anios'));
+    const rentabilidad = leerNumero(valor('rentabilidad'));
+    const comision = vacio0('comision');
+    const inflacion = vacio0('inflacion');
+    if (!(inicial >= 0 && mensual >= 0) || inicial + mensual === 0) return error('Escribe lo que ya tienes ahorrado o lo que aportas cada mes.');
+    if (!(anios > 0 && anios <= 60)) return error('Escribe un plazo entre 1 y 60 años.');
+    if (!(Number.isFinite(rentabilidad) && rentabilidad >= -20 && rentabilidad <= 30)) return error('Revisa la rentabilidad: escribe el porcentaje anual, por ejemplo 5.');
+    if (!(comision >= 0 && comision <= 10)) return error('Revisa las comisiones: escribe el porcentaje anual, por ejemplo 1,5.');
+    if (!(Number.isFinite(inflacion) && inflacion >= -5 && inflacion <= 20)) return error('Revisa la inflación: escribe el porcentaje anual, por ejemplo 2.');
+
+    out('error').hidden = true;
+    out('ok').hidden = false;
+    const r = calcularInteres({ inicial, mensual, anios, rentabilidad, comision, inflacion });
+    out('final').textContent = euros(r.final);
+    out('resumen').textContent = `Al cabo de ${fmt(anios)} ${anios === 1 ? 'año' : 'años'}`;
+    out('aportado').textContent = euros(r.aportado);
+    out('intereses').textContent = euros(r.intereses);
+    out('hoy').textContent = euros(r.enEurosDeHoy);
+    out('comision').textContent = euros(r.costeComision);
+
+    const real = Math.round(r.rentabilidadReal * 100) / 100;
+    const motivos = [
+      real >= 0
+        ? `Descontando ${comision > 0 ? 'comisiones e inflación' : 'la inflación'}, tu rentabilidad real es de un ${porcentaje(real)} al año.`
+        : `Descontando ${comision > 0 ? 'comisiones e inflación' : 'la inflación'}, tu rentabilidad real es negativa (${porcentaje(real)} al año): tu ahorro crece en euros, pero pierde poder de compra.`,
+    ];
+    if (r.intereses < 0) motivos.push('Con estos datos acabas con menos de lo que has aportado.');
+    out('motivos').innerHTML = '';
+    motivos.forEach((m) => {
+      const li = document.createElement('li');
+      li.textContent = m;
+      out('motivos').append(li);
+    });
+
+    out('cuadro').innerHTML = '';
+    r.evolucion.forEach((e) => {
+      const tr = document.createElement('tr');
+      [String(e.anio), euros(e.aportado), euros(e.saldo), euros(e.saldo - e.aportado)].forEach((t) => {
+        const td = document.createElement('td');
+        td.textContent = t;
+        tr.append(td);
+      });
+      out('cuadro').append(tr);
+    });
+  }
+
+  form.addEventListener('input', recalcular);
+  recalcular();
+</script>
