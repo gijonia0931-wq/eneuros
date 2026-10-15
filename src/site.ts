@@ -15,7 +15,7 @@ export const NAV = [
 // Google AdSense. Pon aquí tu ID de editor ("ca-pub-" y 16 cifras, lo ves en AdSense > Cuenta > Información de la cuenta).
 // Con el ID puesto, la web carga el código de AdSense, publica /ads.txt y cambia nuestro aviso de cookies
 // por el mensaje de consentimiento de Google (obligatorio para mostrar anuncios en Europa). Vacío = sin AdSense.
-export const ADSENSE = { client: '' };
+export const ADSENSE = { client: 'ca-pub-5135223922581195' };
 
 // Último Euríbor a 12 meses oficial (media mensual, Banco de España). Actualizar cada mes.
 export const EURIBOR = { valor: 3.247, mes: 'septiembre de 2026' };
