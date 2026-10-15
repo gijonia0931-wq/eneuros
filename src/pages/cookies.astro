@@ -1,6 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
-import { TITULAR, LEGAL_ACTUALIZADO } from '../site';
+import { TITULAR, LEGAL_ACTUALIZADO, ADSENSE } from '../site';
 ---
 <Base title="Política de cookies" description="Qué cookies usa eneuros.es, para qué sirven y cómo cambiar tu elección.">
   <article class="prose">
@@ -20,14 +20,19 @@ import { TITULAR, LEGAL_ACTUALIZADO } from '../site';
       <table>
         <thead><tr><th>Nombre</th><th>Titular</th><th>Para qué sirve</th><th>Duración</th></tr></thead>
         <tbody>
-          <tr><td>eneuros-consent</td><td>eneuros.es</td><td>Guarda tu elección sobre cookies (almacenamiento local).</td><td>12 meses</td></tr>
+          {ADSENSE.client ? (
+            <tr><td>FCCDCF, FCNEC</td><td>Google (mensaje de consentimiento)</td><td>Guardan tu elección sobre cookies y publicidad.</td><td>Hasta 13 meses</td></tr>
+          ) : (
+            <tr><td>eneuros-consent</td><td>eneuros.es</td><td>Guarda tu elección sobre cookies (almacenamiento local).</td><td>12 meses</td></tr>
+          )}
           <tr><td>__cf_bm, cf_clearance</td><td>Cloudflare</td><td>Seguridad: distinguir visitas reales de bots. Solo aparecen en algunos casos.</td><td>30 min a 1 año</td></tr>
         </tbody>
       </table>
     </div>
 
     <h3>Publicidad (solo si las aceptas)</h3>
-    <p>Las usa Google AdSense para mostrar anuncios, limitar las veces que ves el mismo anuncio, medir su rendimiento y, si lo permites, personalizarlos según tus intereses. Si las rechazas, puedes seguir viendo anuncios, pero no personalizados.</p>
+    <p>Las usan Google AdSense y sus socios publicitarios para mostrar anuncios, limitar las veces que ves el mismo anuncio, medir su rendimiento y, si lo permites, personalizarlos según tus intereses y tus visitas anteriores a esta y otras webs. Si las rechazas, puedes seguir viendo anuncios, pero no personalizados.</p>
+    {ADSENSE.client && <p>La lista completa de socios publicitarios y la finalidad de cada uno aparece en el aviso de consentimiento, en el apartado de opciones. Ese aviso es la plataforma de gestión del consentimiento de Google, certificada por el marco de transparencia y consentimiento de IAB Europe (TCF).</p>}
     <div class="table-wrap">
       <table>
         <thead><tr><th>Nombre</th><th>Titular</th><th>Para qué sirve</th><th>Duración</th></tr></thead>
@@ -44,7 +49,7 @@ import { TITULAR, LEGAL_ACTUALIZADO } from '../site';
     <p>Ahora mismo la web no usa cookies de estadísticas. Si en el futuro se añaden, se pedirán con tu consentimiento y aparecerán en esta lista.</p>
 
     <h2>Cómo aceptar, rechazar o cambiar tu elección</h2>
-    <p>La primera vez que entras verás un aviso donde puedes aceptar, rechazar o elegir qué cookies permites. Rechazar es tan fácil como aceptar y no te impide usar la web. Puedes cambiar de opinión cuando quieras con el botón de arriba o con el enlace <em>Configurar cookies</em> del pie de página. Tu elección se recuerda durante 12 meses; después te la volveremos a preguntar.</p>
+    <p>La primera vez que entras verás un aviso donde puedes aceptar, rechazar o elegir qué cookies permites. Rechazar es tan fácil como aceptar y no te impide usar la web. Puedes cambiar de opinión cuando quieras con el botón de arriba o con el enlace <em>Configurar cookies</em> del pie de página. {ADSENSE.client ? 'Tu elección se recuerda un máximo de 13 meses; después te la volveremos a preguntar.' : 'Tu elección se recuerda durante 12 meses; después te la volveremos a preguntar.'}</p>
     <p>También puedes borrar o bloquear las cookies desde tu navegador:
       <a href="https://support.google.com/chrome/answer/95647?hl=es" rel="noopener">Chrome</a>,
       <a href="https://support.mozilla.org/es/kb/Borrar%20cookies" rel="noopener">Firefox</a>,

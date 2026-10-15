@@ -1,0 +1,18 @@
+---
+import { CALCULADORAS } from '../site';
+interface Props {
+  dato: { title: string; valor: string; detalle: string; fuente: string; articulo: string; calculadora?: string };
+}
+const { dato } = Astro.props;
+const calc = CALCULADORAS.find((c) => c.slug === dato.calculadora);
+---
+<div class="card dato">
+  <h3>{dato.title}</h3>
+  <div class="dato-valor">{dato.valor}</div>
+  <p>{dato.detalle}</p>
+  <p class="dato-fuente">Fuente: {dato.fuente}</p>
+  <p class="dato-links">
+    <a href={dato.articulo}>Qué significa</a>
+    {calc && <a href={`/calculadoras/${calc.slug}/`}>Calculadora</a>}
+  </p>
+</div>

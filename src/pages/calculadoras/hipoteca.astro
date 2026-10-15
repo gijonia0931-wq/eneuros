@@ -1,6 +1,5 @@
 ---
 import Base from '../../layouts/Base.astro';
-import NewsletterBox from '../../components/NewsletterBox.astro';
 import { EURIBOR } from '../../site';
 import { calcularHipoteca, cuotaMensual, euros, eurosRedondo, porcentaje } from '../../calc/hipoteca';
 
@@ -171,7 +170,6 @@ const ESCENARIOS = [-1, -0.5, 0, 0.5, 1];
     <p>Calcula primero la parte fija con su tipo y el plazo total. Para los años variables, elige "Variable" y pon como dinero lo que te quedará por pagar al acabar el tramo fijo (lo verás en tu cuadro de amortización) y los años que falten.</p>
   </article>
 
-  <div class="section"><NewsletterBox /></div>
 </Base>
 
 <script>

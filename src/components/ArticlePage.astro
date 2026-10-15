@@ -1,6 +1,5 @@
 ---
 import Base from '../layouts/Base.astro';
-import NewsletterBox from './NewsletterBox.astro';
 import ArticleList from './ArticleList.astro';
 interface Props {
   title: string;
@@ -35,5 +34,4 @@ const fmt = new Intl.DateTimeFormat('es-ES', { dateStyle: 'long' });
       <ArticleList items={relacionadas} base="/guias/" empty="" />
     </section>
   )}
-  <div class="section"><NewsletterBox /></div>
 </Base>
