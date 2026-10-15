@@ -203,8 +203,10 @@ const TABLA = [15000, 18000, 20000, 25000, 30000, 35000, 40000, 50000, 60000];
     out('irpf').textContent = eurosRedondo(r.irpf);
     out('ss').textContent = eurosRedondo(r.seguridadSocial);
     const nota = out('nota');
-    nota.hidden = !r.exento;
+    nota.hidden = !r.exento && !(r.irpf > 0 && r.deduccionSMI > 0);
     if (r.exento) nota.textContent = 'Con este sueldo y tu situación familiar no te tienen que retener IRPF en la nómina.';
+    else if (r.irpf > 0 && r.deduccionSMI > 0)
+      nota.textContent = `Con este sueldo tienes en la declaración de la renta una deducción de hasta ${euros(r.deduccionSMI)} para salarios bajos, que la nómina no tiene en cuenta: es probable que Hacienda te devuelva parte o toda la retención.`;
   }
 
   form.addEventListener('input', recalcular);

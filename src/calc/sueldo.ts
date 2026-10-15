@@ -28,6 +28,7 @@ export interface ResultadoSueldo {
   netoMes: number; // nómina ordinaria
   netoExtra: number; // cada paga extra (0 si 12 pagas)
   exento: boolean;
+  deduccionSMI: number; // deducción de la renta para sueldos bajos (0 si no aplica)
 }
 
 // Seguridad Social 2026, parte del trabajador
@@ -55,6 +56,11 @@ const EXENTOS: Record<Situacion, (number | null)[]> = {
   conyuge: [17197, 18130, 19262],
   otras: [15876, 16342, 16867],
 };
+
+// Deducción por rendimientos del trabajo bajos (D.A. 61.ª LIRPF, RDL 5/2026): no la aplica la retención
+// de la nómina, se recupera en la declaración de la renta. Tope: no puede superar la cuota del impuesto.
+const SMI_ANUAL = 17094;
+const DEDUCCION_SMI = { maxima: 590.89, limite: 20048.45, pendiente: 0.2 };
 
 const red2 = (n: number) => Math.round(n * 100) / 100;
 const truncar2 = (n: number) => Math.trunc(n * 100 + 1e-9) / 100;
@@ -127,5 +133,9 @@ export function calcularSueldo(d: DatosSueldo): ResultadoSueldo {
   const irpfPaga = (paga * tipoIRPF) / 100;
   const netoMes = paga - ss.anual / 12 - irpfPaga;
   const netoExtra = d.pagas === 14 ? paga - irpfPaga : 0;
-  return { seguridadSocial: ss.anual, tipoSS: ss.tipo, tipoIRPF, irpf, netoAnual, pagas: d.pagas, netoMes, netoExtra, exento };
+  const deduccionSMI =
+    retrib < DEDUCCION_SMI.limite
+      ? red2(Math.max(DEDUCCION_SMI.maxima - DEDUCCION_SMI.pendiente * Math.max(retrib - SMI_ANUAL, 0), 0))
+      : 0;
+  return { seguridadSocial: ss.anual, tipoSS: ss.tipo, tipoIRPF, irpf, netoAnual, pagas: d.pagas, netoMes, netoExtra, exento, deduccionSMI };
 }
