@@ -162,3 +162,7 @@ section[data-modo][hidden] { display: none; }
 .calc-motivos { margin: 16px 0 0; padding-left: 20px; font-size: .92rem; color: var(--muted); }
 .calc-motivos li + li { margin-top: 6px; }
 .calc-aviso { background: #fbf1df; border-radius: var(--radius); padding: 14px 18px; font-size: .92rem; }
+.calc-select { width: 100%; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); padding: 11px 12px; font: 1rem var(--font); color: var(--text); }
+.calc-select:focus { border-color: var(--brand); outline: 2px solid var(--brand-soft); }
+.calc-dos { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; align-items: end; }
+.calc-check[hidden] { display: none; }
