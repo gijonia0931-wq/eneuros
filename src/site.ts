@@ -10,8 +10,12 @@ export const NAV = [
   { href: '/datos/', label: 'Datos al día' },
   { href: '/actualidad/', label: 'Actualidad' },
   { href: '/guias/', label: 'Guías' },
-  { href: '/newsletter/', label: 'Newsletter' },
 ];
+
+// Google AdSense. Pon aquí tu ID de editor ("ca-pub-" y 16 cifras, lo ves en AdSense > Cuenta > Información de la cuenta).
+// Con el ID puesto, la web carga el código de AdSense, publica /ads.txt y cambia nuestro aviso de cookies
+// por el mensaje de consentimiento de Google (obligatorio para mostrar anuncios en Europa). Vacío = sin AdSense.
+export const ADSENSE = { client: '' };
 
 // Último Euríbor a 12 meses oficial (media mensual, Banco de España). Actualizar cada mes.
 export const EURIBOR = { valor: 3.247, mes: 'septiembre de 2026' };
@@ -42,11 +46,47 @@ export const CALCULADORAS = [
   { slug: 'interes-compuesto', title: 'Interés compuesto', desc: 'Cuánto crece tu ahorro con aportaciones mensuales y rentabilidad.', disponible: true },
 ];
 
+// Últimos datos oficiales de /datos/ y de la portada. Actualizar cada mes junto con EURIBOR e INDICES_ALQUILER.
 export const DATOS = [
-  { slug: 'precio-luz', title: 'Precio de la luz hoy', desc: 'Precio PVPC por horas, actualizado cada día.' },
-  { slug: 'euribor', title: 'Euríbor hoy', desc: 'Valor diario y media mensual del Euríbor a 12 meses.' },
-  { slug: 'ipc', title: 'IPC e inflación', desc: 'Último dato del INE y evolución de los precios.' },
-  { slug: 'gasolina', title: 'Precio de la gasolina', desc: 'Precio medio de gasolina y diésel en España.' },
+  {
+    title: 'Euríbor a 12 meses',
+    valor: `${EURIBOR.valor.toLocaleString('es-ES', { minimumFractionDigits: 3 })} %`,
+    detalle: `Media de ${EURIBOR.mes}. Es el índice con el que se revisan la mayoría de hipotecas variables.`,
+    fuente: 'Banco de España',
+    articulo: '/actualidad/euribor-septiembre-2026/',
+    calculadora: 'hipoteca',
+  },
+  {
+    title: 'IPC (inflación)',
+    valor: `${INDICES_ALQUILER.ipc.toLocaleString('es-ES')} %`,
+    detalle: `Tasa anual de ${INDICES_ALQUILER.mes}. Mide cuánto han subido los precios en un año.`,
+    fuente: 'INE',
+    articulo: '/actualidad/ipc-septiembre-2026/',
+    calculadora: 'alquiler-ipc',
+  },
+  {
+    title: 'Índice de alquileres (IRAV)',
+    valor: `${INDICES_ALQUILER.irav.toLocaleString('es-ES')} %`,
+    detalle: `Dato de ${INDICES_ALQUILER.mes}. Es el tope de subida anual de los alquileres firmados desde mayo de 2023.`,
+    fuente: 'INE',
+    articulo: '/guias/actualizar-alquiler-ipc/',
+    calculadora: 'alquiler-ipc',
+  },
+  {
+    title: 'Factura de la luz (PVPC)',
+    valor: '104,31 €',
+    detalle: 'Recibo de septiembre de 2026 de un usuario medio con tarifa regulada (4,4 kW y 366 kWh al mes).',
+    fuente: 'Facua-Consumidores en Acción',
+    articulo: '/actualidad/factura-luz-septiembre-2026/',
+    calculadora: 'factura-luz',
+  },
+  {
+    title: 'Gasolina 95',
+    valor: '1,787 €/l',
+    detalle: 'Precio medio en España a 13 de octubre de 2026. El diésel estaba a 1,887 €/l.',
+    fuente: 'Ministerio para la Transición Ecológica',
+    articulo: '/actualidad/precio-carburantes-octubre-2026/',
+  },
 ];
 
 // Datos del titular de la web. La ley (LSSI) obliga a mostrarlos en el aviso legal.
@@ -57,7 +97,7 @@ export const TITULAR = {
   email: 'gijonia0931@gmail.com',
 };
 
-export const LEGAL_ACTUALIZADO = '14 de octubre de 2026';
+export const LEGAL_ACTUALIZADO = '15 de octubre de 2026';
 
 export const LEGAL_NAV = [
   { href: '/sobre-eneuros/', label: 'Sobre eneuros' },

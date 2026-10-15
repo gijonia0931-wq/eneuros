@@ -8,7 +8,6 @@ La economía explicada en euros. Web estática hecha con [Astro](https://astro.b
 - `/datos/` – datos al día (luz, Euríbor, IPC, gasolina)
 - `/actualidad/` – noticias explicadas (`src/content/actualidad/*.md`)
 - `/guias/` – guías (`src/content/guias/*.md`)
-- `/newsletter/`
 
 ## Publicar un artículo
 

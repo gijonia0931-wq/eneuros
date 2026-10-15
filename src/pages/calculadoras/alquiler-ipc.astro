@@ -1,6 +1,5 @@
 ---
 import Base from '../../layouts/Base.astro';
-import NewsletterBox from '../../components/NewsletterBox.astro';
 import { INDICES_ALQUILER as IND, TOPE_ALQUILER as TOPE } from '../../site';
 import { actualizarAlquiler } from '../../calc/alquiler';
 import { euros, porcentaje } from '../../calc/formato';
@@ -144,7 +143,6 @@ const ejemplos = [
     <p>Como referencia, lo recomendable es que no pase del 30 % de tus ingresos netos. Lo calculamos en <a href="/guias/cuanto-alquiler-puedo-pagar/">cuánto alquiler puedo pagar</a>.</p>
   </article>
 
-  <div class="section"><NewsletterBox /></div>
 </Base>
 
 <script>

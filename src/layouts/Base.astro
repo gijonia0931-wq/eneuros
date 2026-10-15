@@ -1,7 +1,7 @@
 ---
 import '../styles/global.css';
 import CookieBanner from '../components/CookieBanner.astro';
-import { SITE, NAV, LEGAL_NAV } from '../site';
+import { SITE, NAV, LEGAL_NAV, ADSENSE } from '../site';
 
 interface Props {
   title?: string;
@@ -40,6 +40,12 @@ const path = Astro.url.pathname;
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
+    {ADSENSE.client && (
+      <>
+        <meta name="google-adsense-account" content={ADSENSE.client} />
+        <script async src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE.client}`} crossorigin="anonymous"></script>
+      </>
+    )}
   </head>
   <body>
     <header class="site-header">
@@ -65,6 +71,21 @@ const path = Astro.url.pathname;
         <div>© {new Date().getFullYear()} eneuros.es</div>
       </div>
     </footer>
-    <CookieBanner />
+    {ADSENSE.client ? (
+      <script is:inline>
+        // Con AdSense, el consentimiento lo gestiona el mensaje de Google (Privacidad y mensajes, IAB TCF).
+        // "Configurar cookies" vuelve a abrir ese mensaje.
+        document.querySelectorAll('[data-cookie-settings]').forEach(function (el) {
+          el.addEventListener('click', function (e) {
+            e.preventDefault();
+            window.googlefc = window.googlefc || {};
+            window.googlefc.callbackQueue = window.googlefc.callbackQueue || [];
+            window.googlefc.callbackQueue.push(function () { window.googlefc.showRevocationMessage(); });
+          });
+        });
+      </script>
+    ) : (
+      <CookieBanner />
+    )}
   </body>
 </html>

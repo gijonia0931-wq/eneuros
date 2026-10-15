@@ -1,6 +1,5 @@
 ---
 import Base from '../../layouts/Base.astro';
-import NewsletterBox from '../../components/NewsletterBox.astro';
 import { calcularSueldo, type DatosSueldo } from '../../calc/sueldo';
 import { euros, eurosRedondo, porcentaje } from '../../calc/formato';
 
@@ -154,7 +153,6 @@ const TABLA = [15000, 18000, 20000, 25000, 30000, 35000, 40000, 50000, 60000];
     <p>No. Los autónomos pagan una cuota según sus rendimientos y otro sistema de pagos a cuenta. Esta calculadora es para personas con nómina.</p>
   </article>
 
-  <div class="section"><NewsletterBox /></div>
 </Base>
 
 <script>

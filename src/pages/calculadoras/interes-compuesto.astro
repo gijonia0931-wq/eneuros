@@ -1,6 +1,5 @@
 ---
 import Base from '../../layouts/Base.astro';
-import NewsletterBox from '../../components/NewsletterBox.astro';
 import { calcularInteres, type DatosInteres } from '../../calc/interes';
 import { euros, eurosRedondo, porcentaje } from '../../calc/formato';
 
@@ -128,7 +127,6 @@ const rentabilidades = [2, 5, 7];
     <p>Un <a href="/guias/fondo-de-emergencia/">fondo de emergencia</a> para los imprevistos, de modo que no tengas que sacar el dinero invertido en un mal momento. Si no sabes cuánto puedes apartar cada mes, la <a href="/guias/regla-50-30-20/">regla 50/30/20</a> es un buen punto de partida.</p>
   </article>
 
-  <div class="section"><NewsletterBox /></div>
 </Base>
 
 <script>

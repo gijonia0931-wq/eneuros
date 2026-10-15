@@ -1,6 +1,5 @@
 ---
 import Base from '../../layouts/Base.astro';
-import NewsletterBox from '../../components/NewsletterBox.astro';
 import { IMPUESTOS_LUZ } from '../../site';
 import { factura, type DatosFactura, type Tarifa } from '../../calc/luz';
 import { euros, porcentaje } from '../../calc/formato';
@@ -171,7 +170,6 @@ const val = (t: Tarifa, k: keyof typeof DEFECTO) => num((t as Record<string, num
     <p>Puedes cambiar el impuesto eléctrico y el IVA en "Reparto del consumo e impuestos". Cuando haya una rebaja en vigor, actualizaremos los valores que vienen puestos.</p>
   </article>
 
-  <div class="section"><NewsletterBox /></div>
 </Base>
 
 <script>

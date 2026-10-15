@@ -1,7 +1,7 @@
 ---
 import CalcCard from '../components/CalcCard.astro';
 import Base from '../layouts/Base.astro';
-import NewsletterBox from '../components/NewsletterBox.astro';
+import DatoCard from '../components/DatoCard.astro';
 import ArticleList from '../components/ArticleList.astro';
 import { SITE, CALCULADORAS, DATOS } from '../site';
 import { publicados } from '../lib';
@@ -25,9 +25,7 @@ const guias = (await publicados('guias')).slice(0, 6);
   <section class="section">
     <div class="section-head"><h2>Datos al día</h2><a href="/datos/">Ver todos</a></div>
     <div class="grid">
-      {DATOS.map((d) => (
-        <div class="card"><span class="badge">Próximamente</span><h3>{d.title}</h3><p>{d.desc}</p></div>
-      ))}
+      {DATOS.slice(0, 3).map((d) => <DatoCard dato={d} />)}
     </div>
   </section>
 
@@ -40,6 +38,4 @@ const guias = (await publicados('guias')).slice(0, 6);
     <div class="section-head"><h2>Guías</h2><a href="/guias/">Ver todas</a></div>
     <ArticleList items={guias} base="/guias/" empty="Pronto publicaremos las primeras guías." />
   </section>
-
-  <section class="section"><NewsletterBox /></section>
 </Base>
