@@ -1,0 +1,256 @@
+---
+import Base from '../../layouts/Base.astro';
+import NewsletterBox from '../../components/NewsletterBox.astro';
+import { IMPUESTOS_LUZ } from '../../site';
+import { factura, type DatosFactura, type Tarifa } from '../../calc/luz';
+import { euros, porcentaje } from '../../calc/formato';
+
+// Valores iniciales: la factura de ejemplo de la guía "Cómo leer la factura de la luz" (57,45 €).
+const DATOS: DatosFactura = {
+  dias: 30, potenciaP1: 4.6, potenciaP2: 4.6, kwh: 250, repartoPunta: 24, repartoLlano: 28,
+  contadorMes: 0.81, impuestoElectrico: IMPUESTOS_LUZ.electrico, iva: IMPUESTOS_LUZ.iva,
+};
+const TARIFA_A: Tarifa = { p1: 0.085, p2: 0.01, tipo: 'tramos', punta: 0.19, llano: 0.13, valle: 0.09 };
+const TARIFA_B: Tarifa = { p1: 0.095, p2: 0.03, tipo: 'unico', precio: 0.12 };
+const f = factura(DATOS, TARIFA_A);
+const num = (n: number) => n.toLocaleString('es-ES', { maximumFractionDigits: 6 });
+const ofertas = [
+  { id: 'a', titulo: 'Tu tarifa', t: TARIFA_A },
+  { id: 'b', titulo: 'La otra oferta', t: TARIFA_B },
+];
+const DEFECTO = { precio: 0.12, punta: 0.19, llano: 0.13, valle: 0.09 };
+const val = (t: Tarifa, k: keyof typeof DEFECTO) => num((t as Record<string, number>)[k] ?? DEFECTO[k]);
+---
+<Base
+  title="Calculadora de la factura de la luz"
+  description="Calcula tu factura de la luz con potencia, consumo, impuesto eléctrico e IVA, y compara tu tarifa con otra oferta del mercado libre o con el PVPC."
+>
+  <h1>Calculadora de la factura de la luz</h1>
+  <p class="lead">Calcula cuánto pagarás de luz con tus precios y tu consumo, y compara tu tarifa con otra oferta para saber cuál te sale más barata.</p>
+
+  <div class="calc section">
+    <form class="calc-form" id="calc-luz" novalidate onsubmit="return false">
+      <div class="calc-dos">
+        <label class="calc-field">
+          <span>Consumo</span>
+          <span class="calc-input"><input name="kwh" inputmode="decimal" autocomplete="off" value={num(DATOS.kwh)} /><span>kWh</span></span>
+        </label>
+        <label class="calc-field">
+          <span>Días de la factura</span>
+          <span class="calc-input"><input name="dias" inputmode="numeric" autocomplete="off" value={DATOS.dias} /><span>días</span></span>
+        </label>
+      </div>
+      <label class="calc-field">
+        <span>Potencia contratada</span>
+        <span class="calc-input"><input name="potencia" inputmode="decimal" autocomplete="off" value={num(DATOS.potenciaP1)} /><span>kW</span></span>
+        <small>Viene en tu factura. Lo habitual es 3,45, 4,6 o 5,75 kW.</small>
+      </label>
+
+      {ofertas.map((o) => (<>
+        {o.id === 'b' && (
+          <label class="calc-check">
+            <input type="checkbox" name="comparar" />
+            <span>Comparar con otra oferta <small>(otra compañía, o el PVPC con el precio medio de tu última factura)</small></span>
+          </label>
+        )}
+        <fieldset class="calc-tarifa" data-tarifa={o.id} hidden={o.id === 'b'}>
+          <legend>{o.titulo}</legend>
+          <div class="calc-dos">
+            <label class="calc-field">
+              <span>Potencia punta (P1)</span>
+              <span class="calc-input"><input name={`${o.id}-p1`} inputmode="decimal" autocomplete="off" value={num(o.t.p1)} /><span>€/kW día</span></span>
+            </label>
+            <label class="calc-field">
+              <span>Potencia valle (P2)</span>
+              <span class="calc-input"><input name={`${o.id}-p2`} inputmode="decimal" autocomplete="off" value={num(o.t.p2)} /><span>€/kW día</span></span>
+            </label>
+          </div>
+          <div class="calc-modo">
+            <label><input type="radio" name={`${o.id}-tipo`} value="unico" checked={o.t.tipo === 'unico'} /> Un precio</label>
+            <label><input type="radio" name={`${o.id}-tipo`} value="tramos" checked={o.t.tipo === 'tramos'} /> Tres precios</label>
+          </div>
+          <label class="calc-field" data-tipo={`${o.id}-unico`} hidden={o.t.tipo !== 'unico'}>
+            <span>Precio de la energía</span>
+            <span class="calc-input"><input name={`${o.id}-precio`} inputmode="decimal" autocomplete="off" value={val(o.t, 'precio')} /><span>€/kWh</span></span>
+          </label>
+          <div class="calc-tres" data-tipo={`${o.id}-tramos`} hidden={o.t.tipo !== 'tramos'}>
+            {(['punta', 'llano', 'valle'] as const).map((k) => (
+              <label class="calc-field">
+                <span>{k[0].toUpperCase() + k.slice(1)}</span>
+                <span class="calc-input"><input name={`${o.id}-${k}`} inputmode="decimal" autocomplete="off" value={val(o.t, k)} /><span>€/kWh</span></span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+      </>))}
+
+
+      <details class="calc-avanzado">
+        <summary>Reparto del consumo e impuestos</summary>
+        <div class="calc-dos">
+          <label class="calc-field">
+            <span>En punta</span>
+            <span class="calc-input"><input name="punta" inputmode="decimal" autocomplete="off" value={num(DATOS.repartoPunta)} /><span>%</span></span>
+          </label>
+          <label class="calc-field">
+            <span>En llano</span>
+            <span class="calc-input"><input name="llano" inputmode="decimal" autocomplete="off" value={num(DATOS.repartoLlano)} /><span>%</span></span>
+          </label>
+        </div>
+        <small>El resto va a valle. Solo cuenta en tarifas con tres precios; tu factura dice cuántos kWh gastaste en cada tramo.</small>
+        <div class="calc-dos">
+          <label class="calc-field">
+            <span>Impuesto eléctrico</span>
+            <span class="calc-input"><input name="ie" inputmode="decimal" autocomplete="off" value={num(IMPUESTOS_LUZ.electrico)} /><span>%</span></span>
+          </label>
+          <label class="calc-field">
+            <span>IVA</span>
+            <span class="calc-input"><input name="iva" inputmode="decimal" autocomplete="off" value={num(IMPUESTOS_LUZ.iva)} /><span>%</span></span>
+          </label>
+        </div>
+        <label class="calc-field">
+          <span>Alquiler del contador</span>
+          <span class="calc-input"><input name="contador" inputmode="decimal" autocomplete="off" value={num(DATOS.contadorMes)} /><span>€ al mes</span></span>
+        </label>
+      </details>
+    </form>
+
+    <div class="calc-result" aria-live="polite">
+      <p class="calc-error" data-out="error" hidden></p>
+      <div data-out="ok">
+        <div class="calc-label">Tu factura</div>
+        <div class="calc-big" data-out="total">{euros(f.total)}</div>
+        <div class="calc-sub" data-out="sub">Unos {euros((f.total * 365) / DATOS.dias)} al año · {euros(f.precioMedioKwh)} por kWh con todo incluido</div>
+        <table class="calc-table calc-desglose">
+          <tbody data-out="desglose">
+            <tr><td>Potencia</td><td>{euros(f.potencia)}</td></tr>
+            <tr><td>Energía</td><td>{euros(f.energia)}</td></tr>
+            <tr><td>Impuesto eléctrico</td><td>{euros(f.impuesto)}</td></tr>
+            <tr><td>Alquiler del contador</td><td>{euros(f.contador)}</td></tr>
+            <tr><td>IVA</td><td>{euros(f.iva)}</td></tr>
+          </tbody>
+        </table>
+        <p class="calc-esfuerzo" data-out="comparacion" hidden></p>
+      </div>
+    </div>
+  </div>
+
+  <section class="section prose">
+    <p class="calc-nota">Resultado orientativo con los impuestos de {IMPUESTOS_LUZ.actualizado} (impuesto eléctrico del {porcentaje(5.11)} e IVA del {IMPUESTOS_LUZ.iva} %). No incluye el bono social, descuentos promocionales ni servicios añadidos que cobre tu compañía. En el PVPC el precio cambia cada hora, así que el resultado es tan bueno como el precio medio que pongas.</p>
+  </section>
+
+  <article class="section prose">
+    <h2>Dónde encontrar cada dato en tu factura</h2>
+    <ul>
+      <li><strong>Consumo y días:</strong> en el resumen de la primera página, junto a las fechas del periodo facturado.</li>
+      <li><strong>Potencia contratada:</strong> en los datos del contrato, en kW. Casi siempre es la misma en punta (P1) y en valle (P2).</li>
+      <li><strong>Precio de la potencia:</strong> en el detalle de la factura, en euros por kW y día. P1 es bastante más caro que P2.</li>
+      <li><strong>Precio de la energía:</strong> en euros por kWh. Si tienes tres precios, verás uno para punta, otro para llano y otro para valle.</li>
+    </ul>
+    <p>Lo explicamos línea a línea en <a href="/guias/como-leer-la-factura-de-la-luz/">cómo leer la factura de la luz</a>.</p>
+
+    <h2>Cómo se calcula la factura</h2>
+    <ol>
+      <li><strong>Potencia:</strong> kW contratados × días × precio por kW y día, en P1 y en P2.</li>
+      <li><strong>Energía:</strong> kWh consumidos × precio por kWh (o cada tramo por su precio).</li>
+      <li><strong>Impuesto eléctrico:</strong> un {porcentaje(5.11)} sobre potencia más energía.</li>
+      <li><strong>Alquiler del contador:</strong> lo que cobra la distribuidora por el aparato, unos 0,81 € al mes.</li>
+      <li><strong>IVA:</strong> un {IMPUESTOS_LUZ.iva} % sobre todo lo anterior, impuesto eléctrico incluido.</li>
+    </ol>
+    <p>Con los datos que vienen puestos (4,6 kW, 250 kWh en 30 días y precios de ejemplo) sale una factura de <strong>{euros(f.total)}</strong>. Fíjate en que la potencia pesa mucho: la pagas aunque no enciendas nada. Si crees que tienes más de la que necesitas, lee <a href="/guias/potencia-contratada-luz/">cuánta potencia contratar</a>.</p>
+
+    <h2>PVPC o mercado libre: cómo compararlos aquí</h2>
+    <p>Marca "Comparar con otra oferta" y rellena los precios de las dos. Si una de ellas es el <strong>PVPC</strong> (la tarifa regulada), su precio de la energía cambia cada hora: usa como precio único el coste medio por kWh de tu última factura, o mejor, la media de varios meses. Un kWh muy barato puede esconder una potencia cara, por eso la calculadora suma todo con tu consumo real. Más detalles en <a href="/guias/pvpc-o-mercado-libre/">PVPC o mercado libre</a>.</p>
+
+    <h2>Preguntas frecuentes</h2>
+    <h3>¿Por qué pago tanto aunque gaste poco?</h3>
+    <p>Porque la potencia, el contador y los impuestos sobre ellos se pagan siempre. En una factura de 250 kWh, la potencia ya supone casi una cuarta parte.</p>
+    <h3>¿Me compensa una tarifa con tres precios?</h3>
+    <p>Sí si puedes concentrar mucho consumo en valle (de 0:00 a 8:00 y los fines de semana). Prueba a cambiar el reparto del consumo en la calculadora y verás cuánto cambia. Los horarios están en <a href="/guias/tramos-horarios-luz/">tramos horarios de la luz</a>.</p>
+    <h3>¿Y si se activa una rebaja de impuestos?</h3>
+    <p>Puedes cambiar el impuesto eléctrico y el IVA en "Reparto del consumo e impuestos". Cuando haya una rebaja en vigor, actualizaremos los valores que vienen puestos.</p>
+  </article>
+
+  <div class="section"><NewsletterBox /></div>
+</Base>
+
+<script>
+  import { factura, type Tarifa } from '../../calc/luz';
+  import { leerNumero, euros } from '../../calc/formato';
+
+  const form = document.getElementById('calc-luz') as HTMLFormElement;
+  const out = (name: string) => document.querySelector(`[data-out="${name}"]`) as HTMLElement;
+  const n = (name: string) => leerNumero((form.elements.namedItem(name) as HTMLInputElement | RadioNodeList).value);
+  const v = (name: string) => (form.elements.namedItem(name) as RadioNodeList).value;
+  const ok = (x: number, max: number) => Number.isFinite(x) && x >= 0 && x <= max;
+
+  function error(msg: string) {
+    out('error').textContent = msg;
+    out('error').hidden = false;
+    out('ok').hidden = true;
+  }
+
+  function tarifa(id: string): Tarifa | null {
+    const p1 = n(`${id}-p1`), p2 = n(`${id}-p2`);
+    if (!ok(p1, 2) || !ok(p2, 2)) return null;
+    if (v(`${id}-tipo`) === 'unico') {
+      const precio = n(`${id}-precio`);
+      return ok(precio, 2) ? { p1, p2, tipo: 'unico', precio } : null;
+    }
+    const punta = n(`${id}-punta`), llano = n(`${id}-llano`), valle = n(`${id}-valle`);
+    return ok(punta, 2) && ok(llano, 2) && ok(valle, 2) ? { p1, p2, tipo: 'tramos', punta, llano, valle } : null;
+  }
+
+  function recalcular() {
+    const comparar = (form.elements.namedItem('comparar') as HTMLInputElement).checked;
+    (document.querySelector('[data-tarifa="b"]') as HTMLElement).hidden = !comparar;
+    for (const id of ['a', 'b']) {
+      const tipo = v(`${id}-tipo`);
+      (document.querySelector(`[data-tipo="${id}-unico"]`) as HTMLElement).hidden = tipo !== 'unico';
+      (document.querySelector(`[data-tipo="${id}-tramos"]`) as HTMLElement).hidden = tipo !== 'tramos';
+    }
+
+    const dias = n('dias'), kwh = n('kwh'), potencia = n('potencia');
+    const punta = n('punta'), llano = n('llano');
+    if (!(ok(kwh, 100000) && kwh > 0)) return error('Escribe tu consumo en kWh.');
+    if (!(Number.isInteger(dias) && dias >= 1 && dias <= 366)) return error('Los días de la factura tienen que estar entre 1 y 366.');
+    if (!(ok(potencia, 15) && potencia > 0)) return error('Escribe tu potencia contratada en kW (por ejemplo, 4,6).');
+    if (!(ok(punta, 100) && ok(llano, 100) && punta + llano <= 100)) return error('Revisa el reparto del consumo: punta y llano no pueden sumar más de 100 %.');
+    const a = tarifa('a');
+    const b = comparar ? tarifa('b') : null;
+    if (!a) return error('Revisa los precios de tu tarifa: escríbelos en euros, por ejemplo 0,13.');
+    if (comparar && !b) return error('Revisa los precios de la otra oferta: escríbelos en euros, por ejemplo 0,13.');
+    const ie = n('ie'), iva = n('iva'), contador = n('contador');
+    if (!ok(ie, 30) || !ok(iva, 30) || !ok(contador, 10)) return error('Revisa los impuestos y el alquiler del contador.');
+
+    out('error').hidden = true;
+    out('ok').hidden = false;
+    const datos = { dias, potenciaP1: potencia, potenciaP2: potencia, kwh, repartoPunta: punta, repartoLlano: llano, contadorMes: contador, impuestoElectrico: ie, iva };
+    const f = factura(datos, a);
+    out('total').textContent = euros(f.total);
+    out('sub').textContent = `Unos ${euros((f.total * 365) / dias)} al año · ${euros(f.precioMedioKwh)} por kWh con todo incluido`;
+    const filas: [string, number][] = [
+      ['Potencia', f.potencia], ['Energía', f.energia], ['Impuesto eléctrico', f.impuesto], ['Alquiler del contador', f.contador], ['IVA', f.iva],
+    ];
+    out('desglose').innerHTML = filas.map(([k, x]) => `<tr><td>${k}</td><td>${euros(x)}</td></tr>`).join('');
+
+    const cmp = out('comparacion');
+    cmp.hidden = !b;
+    if (b) {
+      const fb = factura(datos, b);
+      const dif = fb.total - f.total;
+      const anual = euros((Math.abs(dif) * 365) / dias);
+      cmp.dataset.nivel = dif < 0 ? 'justo' : 'ok';
+      cmp.textContent =
+        Math.abs(dif) < 0.01
+          ? `La otra oferta saldría igual: ${euros(fb.total)}.`
+          : dif < 0
+            ? `La otra oferta saldría por ${euros(fb.total)}: ${euros(-dif)} menos en esta factura, unos ${anual} al año. Te conviene cambiar.`
+            : `La otra oferta saldría por ${euros(fb.total)}: ${euros(dif)} más en esta factura, unos ${anual} al año. Tu tarifa es mejor.`;
+    }
+  }
+
+  form.addEventListener('input', recalcular);
+  form.addEventListener('change', recalcular);
+  recalcular();
+</script>
