@@ -1,10 +1,10 @@
-set -x
 I=https://servicios.ine.es/wstempus/js/ES
-curl -sS "$I/OPERACIONES_DISPONIBLES" | jq -c '.[] | select((.Nombre|test("alquil|Arrendam|Consumo";"i")) or (.Codigo|test("IPC|IRAV";"i")))' 
-curl -sS "$I/TABLAS_OPERACION/IPC" | jq -c '.[] | {Id,Nombre,Ultima_Modificacion,FechaRef_fin}' | tail -40
-curl -sS "$I/TABLAS_OPERACION/IRAV" | head -c 3000; echo
-curl -sS "$I/DATOS_SERIE/IPC251856?nult=2"; echo
-curl -sS "https://data-api.ecb.europa.eu/service/data/FM/M.U2.EUR.RT.MM.EURIBOR1YD_.HSTA?lastNObservations=3&format=csvdata"; echo
-curl -sS "https://app.bde.es/bierest/resources/srdatosapp/listaSeries?idioma=es&series=D_1NBAF472&rango=12M" | head -c 2000; echo
-curl -sS -o carb.json -w "%{http_code} %{size_download}\n" "https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/"
-jq -c '{Fecha, ResultadoConsulta, n:(.ListaEESSPrecio|length), first:.ListaEESSPrecio[0]}' carb.json
+for t in $(curl -sS "$I/TABLAS_OPERACION/IPC" | jq -r '.[] | select(.Nombre|test("general";"i")) | select(.Nombre|test("nacional";"i")) | .Id'); do
+  echo "== tabla $t"
+  curl -sS "$I/SERIES_TABLA/$t" | jq -r '.[] | select(.Nombre|test("general";"i")) | select(.Nombre|test("anual";"i")) | "\(.COD) | \(.Nombre)"' | head -5
+done
+echo "== DATOS_TABLA IPC (nult=1) general anual"
+for t in 25333 76144 78680 76135; do echo "-- $t"; curl -sS "$I/DATOS_TABLA/$t?nult=1" | jq -c '.[] | select(.Nombre|test("general";"i")) | select(.Nombre|test("anual";"i")) | {COD,Nombre,d:.Data}' | head -3; done
+echo "== IRAV 72975"
+curl -sS "$I/SERIES_TABLA/72975" | jq -c '.[] | {COD,Nombre,FK_Periodicidad}' | head -20
+curl -sS "$I/DATOS_TABLA/72975?nult=2" | jq -c '.[] | {COD,Nombre,d:.Data}' | head -10
