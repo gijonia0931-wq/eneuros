@@ -1,0 +1,11 @@
+name: Explorar fuentes (temporal)
+on:
+  push:
+    branches: [claude/project-thread-7wykzk]
+    paths: [scripts/explorar.sh, .github/workflows/explorar.yml]
+jobs:
+  explorar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: bash scripts/explorar.sh
