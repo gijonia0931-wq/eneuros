@@ -180,3 +180,10 @@ section[data-modo][hidden] { display: none; }
 .dato-valor { font: 700 2rem/1.1 var(--serif); color: var(--brand); margin: 4px 0 10px; }
 .card p.dato-fuente { margin-top: 10px; font-size: .82rem; }
 .dato-links { margin-top: auto !important; padding-top: 12px; display: flex; gap: 16px; flex-wrap: wrap; font-weight: 600; font-size: .92rem; }
+
+.luz-tabla { width: 100%; }
+.luz-tabla td:last-child { width: 50%; }
+.luz-barra { display: block; height: 10px; border-radius: 5px; background: var(--muted); }
+.luz-tabla tr[data-nivel='barata'] .luz-barra { background: #2f8f5b; }
+.luz-tabla tr[data-nivel='cara'] .luz-barra { background: #c0392b; }
+.luz-dia h2 .badge:empty { display: none; }

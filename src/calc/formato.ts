@@ -15,3 +15,9 @@ const pct = new Intl.NumberFormat('es-ES', { maximumFractionDigits: 3 });
 export const euros = (n: number) => eur.format(n);
 export const eurosRedondo = (n: number) => eur0.format(n);
 export const porcentaje = (n: number) => `${pct.format(n)} %`;
+
+const MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+/** "2026-09" → "septiembre de 2026" */
+export const mesTexto = (periodo: string) => `${MESES[Number(periodo.slice(5, 7)) - 1]} de ${periodo.slice(0, 4)}`;
+/** "2026-10-13" → "13 de octubre de 2026" */
+export const fechaTexto = (fecha: string) => `${Number(fecha.slice(8, 10))} de ${mesTexto(fecha)}`;

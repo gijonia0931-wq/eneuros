@@ -1,0 +1,8 @@
+{
+  "euribor": { "valor": 3.247, "periodo": "2026-09" },
+  "ipc": { "valor": 4.9, "periodo": "2026-09" },
+  "irav": { "valor": 2.54, "periodo": "2026-09" },
+  "carburantes": { "fecha": "2026-10-13", "gasolina95": 1.787, "diesel": 1.887 },
+  "luz": { "dias": [] },
+  "actualizado": "2026-10-15T00:00:00Z"
+}

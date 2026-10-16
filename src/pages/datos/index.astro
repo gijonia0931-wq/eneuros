@@ -1,17 +1,19 @@
 ---
 import Base from '../../layouts/Base.astro';
 import DatoCard from '../../components/DatoCard.astro';
-import { DATOS } from '../../site';
+import { DATOS, AL_DIA } from '../../site';
+const actualizado = new Date(AL_DIA.actualizado).toLocaleString('es-ES', { timeZone: 'Europe/Madrid', dateStyle: 'long', timeStyle: 'short' });
 ---
-<Base title="Datos al día" description="Último Euríbor, IPC, índice de alquileres, factura de la luz y precio de la gasolina en España, con datos oficiales.">
+<Base title="Datos al día" description="Precio de la luz hoy, último Euríbor, IPC, índice de alquileres y precio de la gasolina en España, con datos oficiales que se actualizan solos.">
   <h1>Datos al día</h1>
   <p class="lead">Los indicadores que mueven tu economía, con el último dato oficial, de dónde sale y qué significa para tu bolsillo.</p>
+  <p class="updated">Datos revisados por última vez el {actualizado}.</p>
   <div class="grid section">
     {DATOS.map((d) => <DatoCard dato={d} />)}
   </div>
   <section class="section prose">
     <h2>Cada cuánto se actualizan</h2>
-    <p>El Euríbor, el IPC y el índice de alquileres son datos mensuales: el Banco de España publica la media del Euríbor los primeros días de cada mes y el INE publica el IPC y el IRAV a mediados de mes. Los revisamos en cuanto salen y, cuando el dato cambia algo importante, lo explicamos en <a href="/actualidad/">Actualidad</a>.</p>
-    <p>El precio de la luz con tarifa regulada y el de los carburantes cambian a diario. Aquí recogemos una referencia reciente; para el precio de hoy consulta la <a href="https://www.ree.es/es/datos/mercados/precio-voluntario-pequeno-consumidor" rel="noopener">web de Red Eléctrica</a> o el <a href="https://geoportalgasolineras.es/" rel="noopener">Geoportal de gasolineras</a> del Ministerio.</p>
+    <p>Los datos se actualizan solos varias veces al día, directamente de las fuentes oficiales: Red Eléctrica para el precio de la luz, el Ministerio para la Transición Ecológica para los carburantes, el Banco Central Europeo para el Euríbor (es el mismo dato que publica el Banco de España) y el INE para el IPC y el índice de alquileres.</p>
+    <p>El precio de la luz con tarifa regulada cambia cada hora: lo tienes completo en <a href="/datos/precio-luz-hoy/">precio de la luz hoy</a>, y a partir de las 20:30 también el de mañana. El de los carburantes cambia a diario. El Euríbor, el IPC y el índice de alquileres son datos mensuales: la media del Euríbor sale el primer día hábil de cada mes y el INE publica el IPC y el IRAV a mediados de mes. Cuando un dato cambia algo importante, lo explicamos en <a href="/actualidad/">Actualidad</a>.</p>
   </section>
 </Base>

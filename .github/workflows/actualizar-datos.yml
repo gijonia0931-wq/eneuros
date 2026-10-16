@@ -1,0 +1,68 @@
+# Actualiza sola los datos que caducan (luz del día, carburantes, Euríbor, IPC, IRAV) y publica la web.
+# Si algo cambia, hace un commit en main y Cloudflare Pages vuelve a publicar.
+# Si una fuente falla, se mantienen los datos anteriores y la ejecución queda en rojo (GitHub avisa por correo).
+name: Actualizar datos
+
+on:
+  schedule:
+    - cron: '40 19 * * *' # noche: Red Eléctrica ya ha publicado los precios de la luz de mañana
+    - cron: '10 22 * * *' # justo después de medianoche en horario de verano
+    - cron: '10 23 * * *' # justo después de medianoche en horario de invierno
+    - cron: '20 5 * * *'  # mañana: carburantes del día, Euríbor e INE
+    - cron: '20 11 * * *' # mediodía: el INE publica a las 9:00
+  workflow_dispatch:
+  pull_request:
+    paths: [scripts/actualizar-datos.mjs, .github/workflows/actualizar-datos.yml, src/data/**]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: actualizar-datos
+  cancel-in-progress: false
+
+jobs:
+  actualizar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.head_ref || 'main' }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Traer datos oficiales
+        id: datos
+        continue-on-error: true
+        run: node scripts/actualizar-datos.mjs
+
+      - name: Comprobar que la web se construye
+        run: npm run build
+
+      # En un PR los datos se guardan en la rama del PR; si no, en main.
+      - name: Publicar los datos nuevos
+        env:
+          RAMA: ${{ github.event_name == 'pull_request' && github.head_ref || 'main' }}
+        run: |
+          if git diff --quiet -- src/data/datos.json; then echo "Sin cambios"; exit 0; fi
+          git config user.name "eneuros-datos"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/data/datos.json
+          git commit -m "Datos al día: $(TZ=Europe/Madrid date '+%Y-%m-%d %H:%M')"
+          for i in 1 2 3; do
+            git pull --rebase origin "$RAMA" && git push origin "HEAD:$RAMA" && exit 0
+            sleep $((i * 10))
+          done
+          exit 1
+
+      - name: Avisar si alguna fuente ha fallado
+        if: steps.datos.outcome == 'failure'
+        run: |
+          echo "::error::Alguna fuente de datos ha fallado; se han mantenido los datos anteriores. Mira el paso 'Traer datos oficiales'."
+          exit 1
