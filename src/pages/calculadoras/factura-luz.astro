@@ -1,8 +1,9 @@
 ---
 import Base from '../../layouts/Base.astro';
-import { IMPUESTOS_LUZ } from '../../site';
+import { IMPUESTOS_LUZ, AL_DIA } from '../../site';
+import { diaActual, resumen, precioKwh } from '../../calc/luzhoy';
 import { factura, type DatosFactura, type Tarifa } from '../../calc/luz';
-import { euros, porcentaje } from '../../calc/formato';
+import { euros, porcentaje, fechaTexto } from '../../calc/formato';
 
 // Valores iniciales: la factura de ejemplo de la guía "Cómo leer la factura de la luz" (57,45 €).
 const DATOS: DatosFactura = {
@@ -12,6 +13,7 @@ const DATOS: DatosFactura = {
 const TARIFA_A: Tarifa = { p1: 0.085, p2: 0.01, tipo: 'tramos', punta: 0.19, llano: 0.13, valle: 0.09 };
 const TARIFA_B: Tarifa = { p1: 0.095, p2: 0.03, tipo: 'unico', precio: 0.12 };
 const f = factura(DATOS, TARIFA_A);
+const luzHoy = diaActual(AL_DIA.luz.dias);
 const num = (n: number) => n.toLocaleString('es-ES', { maximumFractionDigits: 6 });
 const ofertas = [
   { id: 'a', titulo: 'Tu tarifa', t: TARIFA_A },
@@ -46,12 +48,13 @@ const val = (t: Tarifa, k: keyof typeof DEFECTO) => num((t as Record<string, num
       </label>
 
       {ofertas.map((o) => (<>
-        {o.id === 'b' && (
+        {o.id === 'b' && (<>
           <label class="calc-check">
             <input type="checkbox" name="comparar" />
             <span>Comparar con otra oferta <small>(otra compañía, o el PVPC con el precio medio de tu última factura)</small></span>
           </label>
-        )}
+          {luzHoy && <small>Para hacerte una idea: el {fechaTexto(luzHoy.fecha)} el PVPC estaba de media a {precioKwh(resumen(luzHoy).media)} sin impuestos. Míralo hora a hora en <a href="/datos/precio-luz-hoy/">precio de la luz hoy</a>.</small>}
+        </>)}
         <fieldset class="calc-tarifa" data-tarifa={o.id} hidden={o.id === 'b'}>
           <legend>{o.titulo}</legend>
           <div class="calc-dos">

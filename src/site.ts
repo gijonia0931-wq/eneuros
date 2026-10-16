@@ -1,3 +1,7 @@
+import DATOS_AL_DIA from './data/datos.json';
+import { mesTexto, fechaTexto } from './calc/formato';
+import type { DiaLuz } from './calc/luzhoy';
+
 export const SITE = {
   name: 'eneuros',
   tagline: 'La economía explicada en euros',
@@ -17,11 +21,30 @@ export const NAV = [
 // por el mensaje de consentimiento de Google (obligatorio para mostrar anuncios en Europa). Vacío = sin AdSense.
 export const ADSENSE = { client: 'ca-pub-5135223922581195' };
 
-// Último Euríbor a 12 meses oficial (media mensual, Banco de España). Actualizar cada mes.
-export const EURIBOR = { valor: 3.247, mes: 'septiembre de 2026' };
+// Datos que caducan: los actualiza sola la GitHub Action "Actualizar datos" (scripts/actualizar-datos.mjs)
+// en src/data/datos.json, varias veces al día. No hace falta tocarlos a mano.
+type Mensual = { valor: number; periodo: string };
+export const AL_DIA = DATOS_AL_DIA as {
+  euribor: Mensual;
+  ipc: Mensual;
+  irav: Mensual;
+  carburantes: { fecha: string; gasolina95: number; diesel: number };
+  luz: { dias: DiaLuz[] };
+  actualizado: string;
+};
 
-// Últimos índices del INE para actualizar alquileres (tasa anual, %). Actualizar cada mes.
-export const INDICES_ALQUILER = { ipc: 4.9, irav: 2.54, mes: 'septiembre de 2026' };
+// Último Euríbor a 12 meses oficial (media mensual).
+export const EURIBOR = { valor: AL_DIA.euribor.valor, mes: mesTexto(AL_DIA.euribor.periodo) };
+
+// Últimos índices del INE para actualizar alquileres (tasa anual, %).
+export const INDICES_ALQUILER = {
+  ipc: AL_DIA.ipc.valor,
+  irav: AL_DIA.irav.valor,
+  mes:
+    AL_DIA.ipc.periodo === AL_DIA.irav.periodo
+      ? mesTexto(AL_DIA.ipc.periodo)
+      : `IPC de ${mesTexto(AL_DIA.ipc.periodo)} e IRAV de ${mesTexto(AL_DIA.irav.periodo)}`,
+};
 
 // Tope extraordinario a las subidas de alquiler (Real Decreto-ley 29/2026). Si el Congreso no lo convalida
 // o deja de estar en vigor, pon `vigente: false` y la calculadora volverá a la regla general.
@@ -46,46 +69,54 @@ export const CALCULADORAS = [
   { slug: 'interes-compuesto', title: 'Interés compuesto', desc: 'Cuánto crece tu ahorro con aportaciones mensuales y rentabilidad.', disponible: true },
 ];
 
-// Últimos datos oficiales de /datos/ y de la portada. Actualizar cada mes junto con EURIBOR e INDICES_ALQUILER.
+const fmt = (n: number, dec: number) => n.toLocaleString('es-ES', { minimumFractionDigits: dec, maximumFractionDigits: dec });
+
+// Tarjetas de /datos/ y de la portada. `noticia`: prefijo del artículo de Actualidad más reciente sobre el dato
+// (si no hay, se enlaza `articulo`). La tarjeta de la luz la rellena en el navegador el precio del día (LuzHoy).
 export const DATOS = [
   {
+    title: 'Precio de la luz hoy (PVPC)',
+    valor: '',
+    detalle: '',
+    fuente: 'Red Eléctrica',
+    articulo: '/datos/precio-luz-hoy/',
+    enlace: 'Precio por horas',
+    calculadora: 'factura-luz',
+    luz: true,
+  },
+  {
     title: 'Euríbor a 12 meses',
-    valor: `${EURIBOR.valor.toLocaleString('es-ES', { minimumFractionDigits: 3 })} %`,
+    valor: `${fmt(EURIBOR.valor, 3)} %`,
     detalle: `Media de ${EURIBOR.mes}. Es el índice con el que se revisan la mayoría de hipotecas variables.`,
-    fuente: 'Banco de España',
-    articulo: '/actualidad/euribor-septiembre-2026/',
+    fuente: 'Banco Central Europeo / Banco de España',
+    articulo: '/guias/que-es-el-euribor/',
+    noticia: 'euribor-',
     calculadora: 'hipoteca',
   },
   {
     title: 'IPC (inflación)',
     valor: `${INDICES_ALQUILER.ipc.toLocaleString('es-ES')} %`,
-    detalle: `Tasa anual de ${INDICES_ALQUILER.mes}. Mide cuánto han subido los precios en un año.`,
+    detalle: `Tasa anual de ${mesTexto(AL_DIA.ipc.periodo)}. Mide cuánto han subido los precios en un año.`,
     fuente: 'INE',
-    articulo: '/actualidad/ipc-septiembre-2026/',
+    articulo: '/guias/que-es-el-ipc/',
+    noticia: 'ipc-',
     calculadora: 'alquiler-ipc',
   },
   {
     title: 'Índice de alquileres (IRAV)',
     valor: `${INDICES_ALQUILER.irav.toLocaleString('es-ES')} %`,
-    detalle: `Dato de ${INDICES_ALQUILER.mes}. Es el tope de subida anual de los alquileres firmados desde mayo de 2023.`,
+    detalle: `Dato de ${mesTexto(AL_DIA.irav.periodo)}. Es el tope de subida anual de los alquileres firmados desde mayo de 2023.`,
     fuente: 'INE',
     articulo: '/guias/actualizar-alquiler-ipc/',
     calculadora: 'alquiler-ipc',
   },
   {
-    title: 'Factura de la luz (PVPC)',
-    valor: '104,31 €',
-    detalle: 'Recibo de septiembre de 2026 de un usuario medio con tarifa regulada (4,4 kW y 366 kWh al mes).',
-    fuente: 'Facua-Consumidores en Acción',
-    articulo: '/actualidad/factura-luz-septiembre-2026/',
-    calculadora: 'factura-luz',
-  },
-  {
     title: 'Gasolina 95',
-    valor: '1,787 €/l',
-    detalle: 'Precio medio en España a 13 de octubre de 2026. El diésel estaba a 1,887 €/l.',
+    valor: `${fmt(AL_DIA.carburantes.gasolina95, 3)} €/l`,
+    detalle: `Precio medio en las gasolineras de España el ${fechaTexto(AL_DIA.carburantes.fecha)}. El diésel estaba a ${fmt(AL_DIA.carburantes.diesel, 3)} €/l.`,
     fuente: 'Ministerio para la Transición Ecológica',
-    articulo: '/actualidad/precio-carburantes-octubre-2026/',
+    articulo: '/actualidad/',
+    noticia: 'precio-carburantes-',
   },
 ];
 

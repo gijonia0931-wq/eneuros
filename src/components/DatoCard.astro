@@ -1,18 +1,37 @@
 ---
-import { CALCULADORAS } from '../site';
+import { CALCULADORAS, AL_DIA } from '../site';
+import { publicados } from '../lib';
+import { tarjetaLuz } from '../calc/luzhoy';
 interface Props {
-  dato: { title: string; valor: string; detalle: string; fuente: string; articulo: string; calculadora?: string };
+  dato: { title: string; valor: string; detalle: string; fuente: string; articulo: string; enlace?: string; noticia?: string; calculadora?: string; luz?: boolean };
 }
 const { dato } = Astro.props;
 const calc = CALCULADORAS.find((c) => c.slug === dato.calculadora);
+// El artículo de Actualidad más reciente sobre este dato (p. ej. "euribor-octubre-2026"), o la guía si no hay ninguno.
+const noticia = dato.noticia && (await publicados('actualidad')).find((a) => a.id.startsWith(dato.noticia!));
+const articulo = noticia ? `/actualidad/${noticia.id}/` : dato.articulo;
+const { valor, detalle } = dato.luz ? tarjetaLuz(AL_DIA.luz.dias) : dato;
 ---
-<div class="card dato">
+<div class="card dato" data-luz-hoy={dato.luz ? '' : undefined}>
   <h3>{dato.title}</h3>
-  <div class="dato-valor">{dato.valor}</div>
-  <p>{dato.detalle}</p>
+  <div class="dato-valor" data-luz="valor">{valor}</div>
+  <p data-luz="detalle">{detalle}</p>
   <p class="dato-fuente">Fuente: {dato.fuente}</p>
   <p class="dato-links">
-    <a href={dato.articulo}>Qué significa</a>
+    <a href={articulo}>{dato.enlace ?? 'Qué significa'}</a>
     {calc && <a href={`/calculadoras/${calc.slug}/`}>Calculadora</a>}
   </p>
 </div>
+{dato.luz && <script type="application/json" id="luz-dias" set:html={JSON.stringify(AL_DIA.luz.dias)} />}
+
+<script>
+  // La web se construye unas pocas veces al día: el navegador elige el precio de hoy entre los días guardados.
+  import { tarjetaLuz } from '../calc/luzhoy';
+  const card = document.querySelector('[data-luz-hoy]');
+  const json = document.getElementById('luz-dias');
+  if (card && json) {
+    const { valor, detalle } = tarjetaLuz(JSON.parse(json.textContent || '[]'));
+    card.querySelector('[data-luz="valor"]')!.textContent = valor;
+    card.querySelector('[data-luz="detalle"]')!.textContent = detalle;
+  }
+</script>

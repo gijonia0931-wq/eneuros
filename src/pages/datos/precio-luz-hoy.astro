@@ -1,0 +1,68 @@
+---
+import Base from '../../layouts/Base.astro';
+import { AL_DIA } from '../../site';
+import { fechaTexto } from '../../calc/formato';
+import { hoyMadrid, resumen, precioKwh, tramo } from '../../calc/luzhoy';
+
+// Días guardados (hoy y, desde la noche, mañana). En el navegador se ocultan los que ya han pasado.
+const hoy = hoyMadrid();
+const dias = AL_DIA.luz.dias.map((d) => ({ ...d, ...resumen(d) }));
+const max = Math.max(...AL_DIA.luz.dias.flatMap((d) => d.horas.map((x) => x.p)), 0.0001);
+const DIAS_SEMANA = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+const diaSemana = (f: string) => DIAS_SEMANA[new Date(`${f}T12:00:00Z`).getUTCDay()];
+const etiqueta = (f: string) => (f === hoy ? 'Hoy' : f > hoy ? 'Mañana' : '');
+---
+<Base
+  title="Precio de la luz hoy por horas (PVPC)"
+  description="Precio de la luz de hoy hora a hora con la tarifa regulada PVPC: la hora más barata, la más cara y la media del día, con datos de Red Eléctrica que se actualizan solos cada día."
+>
+  <h1>Precio de la luz hoy por horas</h1>
+  <p class="lead">El precio de la tarifa regulada (PVPC) para cada hora del día, con los datos oficiales de Red Eléctrica. Se actualiza solo cada día y, a partir de las 20:30, añade los precios de mañana.</p>
+
+  {dias.length === 0 && <p class="empty">Ahora mismo no tenemos los precios. Consulta la <a href="https://www.ree.es/es/datos/mercados/precio-voluntario-pequeno-consumidor" rel="noopener">web de Red Eléctrica</a>.</p>}
+
+  {dias.map((d) => (
+    <section class="section luz-dia" data-fecha={d.fecha} hidden={d.fecha < hoy && dias.some((x) => x.fecha >= hoy)}>
+      <h2><span class="badge badge-ok" data-etiqueta>{etiqueta(d.fecha)}</span> {diaSemana(d.fecha)}, {fechaTexto(d.fecha)}</h2>
+      <div class="grid">
+        <div class="card dato"><h3>Media del día</h3><div class="dato-valor">{precioKwh(d.media)}</div></div>
+        <div class="card dato"><h3>Hora más barata</h3><div class="dato-valor">{precioKwh(d.barata.p)}</div><p>{tramo(d.barata.h)}</p></div>
+        <div class="card dato"><h3>Hora más cara</h3><div class="dato-valor">{precioKwh(d.cara.p)}</div><p>{tramo(d.cara.h)}</p></div>
+      </div>
+      <div class="table-wrap">
+        <table class="calc-table luz-tabla">
+          <thead><tr><th>Hora</th><th>Precio</th><th aria-hidden="true"></th></tr></thead>
+          <tbody>
+            {d.horas.map((x) => (
+              <tr data-nivel={x.p <= d.media * 0.85 ? 'barata' : x.p >= d.media * 1.15 ? 'cara' : 'media'}>
+                <td>{tramo(x.h).replace('de ', '')}</td>
+                <td>{precioKwh(x.p)}</td>
+                <td aria-hidden="true"><span class="luz-barra" style={`width:${Math.max((x.p / max) * 100, 2).toFixed(1)}%`}></span></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  ))}
+
+  <section class="section prose">
+    <p class="calc-nota">Precio del término de energía del PVPC (energía, peajes y cargos) para la tarifa 2.0TD, en euros por kWh y sin impuestos. A tu factura se suman la potencia contratada, el impuesto eléctrico, el alquiler del contador y el IVA: puedes calcularla entera con la <a href="/calculadoras/factura-luz/">calculadora de la factura de la luz</a>. Fuente: Red Eléctrica.</p>
+    <h2>Cómo aprovechar los precios por horas</h2>
+    <p>Con la tarifa regulada, cada hora tiene un precio distinto. Poner la lavadora, el lavavajillas o cargar el coche en las horas en verde puede ahorrarte bastante frente a las horas en rojo, que suelen coincidir con el final de la tarde. Si tienes una tarifa del mercado libre con precio fijo, estos precios no te afectan cada día, pero te sirven para comparar.</p>
+    <p>Más detalles en <a href="/guias/tramos-horarios-luz/">los tramos horarios de la luz</a> y en <a href="/guias/pvpc-o-mercado-libre/">PVPC o mercado libre</a>.</p>
+  </section>
+</Base>
+
+<script>
+  // A medianoche la página pasa sola al día siguiente si ya tenía sus precios.
+  import { hoyMadrid } from '../../calc/luzhoy';
+  const hoy = hoyMadrid();
+  const secciones = [...document.querySelectorAll<HTMLElement>('.luz-dia')];
+  const hayHoy = secciones.some((s) => s.dataset.fecha! >= hoy);
+  for (const s of secciones) {
+    const f = s.dataset.fecha!;
+    s.hidden = hayHoy && f < hoy;
+    s.querySelector('[data-etiqueta]')!.textContent = f === hoy ? 'Hoy' : f > hoy ? 'Mañana' : '';
+  }
+</script>
