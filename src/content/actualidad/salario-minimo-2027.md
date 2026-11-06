@@ -2,7 +2,10 @@
 title: "Salario mínimo 2027: cuánto podría subir y cuándo se decide"
 description: "Los sindicatos piden subir el SMI al menos un 7 % en 2027 y Trabajo quiere aprobarlo antes de las elecciones del 29 de noviembre. Los escenarios en euros."
 date: 2026-10-15
+updated: 2026-11-06
 ---
+
+> **Actualización del 6 de noviembre de 2026:** Trabajo ya ha publicado el borrador con la cifra: 1.286 euros al mes, un 5,3 % más. Lo explicamos en [salario mínimo 2027: Trabajo propone 1.286 euros](/actualidad/salario-minimo-2027-1286-euros/).
 
 El Ministerio de Trabajo ha acelerado la subida del salario mínimo interprofesional (SMI) de 2027 para tenerla lista antes de las elecciones generales del 29 de noviembre. Los sindicatos CCOO y UGT piden al menos un **7 %**, lo que lo llevaría por encima de los 1.300 euros al mes. Los primeros escenarios técnicos que se manejan son más bajos, entre el 3,7 % y el 5 %. Esto es lo que se sabe y cuánto supondría cada opción en euros.
 
