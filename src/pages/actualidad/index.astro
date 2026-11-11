@@ -1,8 +1,10 @@
 ---
 import Base from '../../layouts/Base.astro';
 import ArticleList from '../../components/ArticleList.astro';
-import { publicados } from '../../lib';
-const items = await publicados('actualidad');
+import { publicados, MAX_NOTICIAS } from '../../lib';
+const todas = await publicados('actualidad');
+const items = todas.slice(0, MAX_NOTICIAS);
+const archivadas = todas.length - items.length;
 ---
 <Base title="Actualidad explicada" description="Las noticias económicas de España explicadas en euros: qué ha pasado y cómo te afecta.">
   <header class="pagina-cabecera">
@@ -13,4 +15,7 @@ const items = await publicados('actualidad');
     </div>
   </header>
   <div class="section"><ArticleList items={items} base="/actualidad/" empty="Pronto publicaremos las primeras noticias explicadas." /></div>
+  {archivadas > 0 && (
+    <p class="section"><a href="/actualidad/archivo/">Ver las {archivadas} noticias anteriores en el archivo</a></p>
+  )}
 </Base>
