@@ -18,7 +18,7 @@ export const NAV = [
 export const ADSENSE = { client: 'ca-pub-5135223922581195' };
 
 // Último Euríbor a 12 meses oficial (media mensual, Banco de España). Actualizar cada mes.
-export const EURIBOR = { valor: 3.247, mes: 'septiembre de 2026' };
+export const EURIBOR = { valor: 3.239, mes: 'octubre de 2026' };
 
 // Últimos índices del INE para actualizar alquileres (tasa anual, %). Actualizar cada mes.
 export const INDICES_ALQUILER = { ipc: 4.9, irav: 2.54, mes: 'septiembre de 2026' };
@@ -53,7 +53,7 @@ export const DATOS = [
     valor: `${EURIBOR.valor.toLocaleString('es-ES', { minimumFractionDigits: 3 })} %`,
     detalle: `Media de ${EURIBOR.mes}. Es el índice con el que se revisan la mayoría de hipotecas variables.`,
     fuente: 'Banco de España',
-    articulo: '/actualidad/euribor-septiembre-2026/',
+    articulo: '/actualidad/euribor-octubre-2026/',
     calculadora: 'hipoteca',
   },
   {
@@ -74,18 +74,18 @@ export const DATOS = [
   },
   {
     title: 'Factura de la luz (PVPC)',
-    valor: '104,31 €',
-    detalle: 'Recibo de septiembre de 2026 de un usuario medio con tarifa regulada (4,4 kW y 366 kWh al mes).',
+    valor: '111,75 €',
+    detalle: 'Recibo de octubre de 2026 de un usuario medio con tarifa regulada (4,4 kW y 366 kWh al mes).',
     fuente: 'Facua-Consumidores en Acción',
-    articulo: '/actualidad/factura-luz-septiembre-2026/',
+    articulo: '/actualidad/factura-luz-octubre-2026/',
     calculadora: 'factura-luz',
   },
   {
     title: 'Gasolina 95',
-    valor: '1,787 €/l',
-    detalle: 'Precio medio en España a 13 de octubre de 2026. El diésel estaba a 1,887 €/l.',
-    fuente: 'Ministerio para la Transición Ecológica',
-    articulo: '/actualidad/precio-carburantes-octubre-2026/',
+    valor: '1,729 €/l',
+    detalle: 'Precio medio en España según el Boletín Petrolero de la UE del 5 de noviembre de 2026. El diésel estaba a 1,898 €/l.',
+    fuente: 'Boletín Petrolero de la Unión Europea',
+    articulo: '/actualidad/precio-carburantes-noviembre-2026/',
   },
 ];
 

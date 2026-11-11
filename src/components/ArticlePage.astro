@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import ArticleList from './ArticleList.astro';
+import { TITULAR } from '../site';
 interface Props {
   title: string;
   description: string;
@@ -22,7 +23,7 @@ const jsonLd = [{
   inLanguage: 'es-ES',
   mainEntityOfPage: url,
   image: new URL('/og.png', Astro.site).href,
-  author: { '@type': 'Organization', name: 'eneuros', url: new URL('/sobre-eneuros/', Astro.site).href },
+  author: { '@type': 'Person', name: TITULAR.nombre, url: new URL('/sobre-eneuros/', Astro.site).href },
   publisher: { '@type': 'Organization', name: 'eneuros', logo: { '@type': 'ImageObject', url: new URL('/og.png', Astro.site).href } },
 }];
 ---
@@ -31,7 +32,7 @@ const jsonLd = [{
     <h1>{title}</h1>
     <p class="lead">{description}</p>
     <p style="color:var(--muted);font-size:.9rem">
-      Publicado el <time datetime={date.toISOString()}>{fmt.format(date)}</time>
+      Por <a href="/sobre-eneuros/">{TITULAR.nombre}</a> · Publicado el <time datetime={date.toISOString()}>{fmt.format(date)}</time>
       {updated && <> · Actualizado el <time datetime={updated.toISOString()}>{fmt.format(updated)}</time></>}
     </p>
     <slot />
