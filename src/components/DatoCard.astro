@@ -1,18 +1,20 @@
 ---
 import { CALCULADORAS } from '../site';
+import { temaDe } from '../temas';
 interface Props {
   dato: { title: string; valor: string; detalle: string; fuente: string; articulo: string; calculadora?: string };
 }
 const { dato } = Astro.props;
 const calc = CALCULADORAS.find((c) => c.slug === dato.calculadora);
+const t = temaDe(dato.title);
 ---
-<div class="card dato">
-  <h3>{dato.title}</h3>
+<div class="card card-tema dato" style={`--tema:${t.color};--tema-suave:${t.suave}`}>
+  <div class="dato-cabecera"><span class="icono icono-sm" aria-hidden="true">{t.icono}</span><h3>{dato.title}</h3></div>
   <div class="dato-valor">{dato.valor}</div>
   <p>{dato.detalle}</p>
-  <p class="dato-fuente">Fuente: {dato.fuente}</p>
+  <p class="dato-fuente">📊 Fuente: {dato.fuente}</p>
   <p class="dato-links">
-    <a href={dato.articulo}>Qué significa</a>
-    {calc && <a href={`/calculadoras/${calc.slug}/`}>Calculadora</a>}
+    <a class="chip" href={dato.articulo}>📖 Qué significa</a>
+    {calc && <a class="chip" href={`/calculadoras/${calc.slug}/`}>🧮 Calculadora</a>}
   </p>
 </div>

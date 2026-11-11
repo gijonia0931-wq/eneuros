@@ -86,10 +86,10 @@ const datos = [
   <body>
     <header class="site-header">
       <div class="wrap">
-        <a class="logo" href="/">en<span>euros</span></a>
+        <a class="logo" href="/"><span class="logo-marca" aria-hidden="true">€</span><span class="logo-texto">en<span>euros</span></span></a>
         <nav class="nav" aria-label="Principal">
           {NAV.map((item) => (
-            <a href={item.href} aria-current={path.startsWith(item.href) ? 'page' : undefined}>{item.label}</a>
+            <a href={item.href} aria-current={path.startsWith(item.href) ? 'page' : undefined}><span aria-hidden="true">{item.icono}</span> {item.label}</a>
           ))}
         </nav>
       </div>

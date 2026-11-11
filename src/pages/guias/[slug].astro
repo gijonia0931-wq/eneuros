@@ -2,6 +2,7 @@
 import ArticlePage from '../../components/ArticlePage.astro';
 import { render } from 'astro:content';
 import { publicados } from '../../lib';
+import { minutosLectura } from '../../temas';
 import { TEMAS_GUIAS, CALCULADORAS } from '../../site';
 
 export async function getStaticPaths() {
@@ -18,4 +19,4 @@ export async function getStaticPaths() {
 const { entry, relacionadas, calculadora } = Astro.props;
 const { Content } = await render(entry);
 ---
-<ArticlePage {...entry.data} relacionadas={relacionadas} calculadora={calculadora}><Content /></ArticlePage>
+<ArticlePage {...entry.data} minutos={minutosLectura(entry.body)} relacionadas={relacionadas} calculadora={calculadora}><Content /></ArticlePage>

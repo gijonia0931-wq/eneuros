@@ -2,6 +2,7 @@
 import ArticlePage from '../../components/ArticlePage.astro';
 import { render } from 'astro:content';
 import { publicados } from '../../lib';
+import { minutosLectura } from '../../temas';
 
 export async function getStaticPaths() {
   const items = await publicados('actualidad');
@@ -10,4 +11,4 @@ export async function getStaticPaths() {
 const { entry } = Astro.props;
 const { Content } = await render(entry);
 ---
-<ArticlePage {...entry.data}><Content /></ArticlePage>
+<ArticlePage {...entry.data} minutos={minutosLectura(entry.body)}><Content /></ArticlePage>

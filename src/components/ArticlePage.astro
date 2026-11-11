@@ -2,6 +2,7 @@
 import Base from '../layouts/Base.astro';
 import ArticleList from './ArticleList.astro';
 import { TITULAR } from '../site';
+import { temaDe } from '../temas';
 interface Props {
   title: string;
   description: string;
@@ -9,8 +10,11 @@ interface Props {
   updated?: Date;
   relacionadas?: { id: string; data: { title: string; description: string; date: Date } }[];
   calculadora?: { slug: string; title: string; desc: string };
+  minutos?: number;
 }
-const { title, description, date, updated, relacionadas = [], calculadora } = Astro.props;
+const { title, description, date, updated, relacionadas = [], calculadora, minutos } = Astro.props;
+const t = temaDe(Astro.url.pathname, title);
+const seccion = Astro.url.pathname.startsWith('/guias/') ? { nombre: 'Guías', href: '/guias/', icono: '📘' } : { nombre: 'Actualidad', href: '/actualidad/', icono: '🗞️' };
 const fmt = new Intl.DateTimeFormat('es-ES', { dateStyle: 'long' });
 const url = new URL(Astro.url.pathname, Astro.site).href;
 const jsonLd = [{
@@ -29,23 +33,36 @@ const jsonLd = [{
 ---
 <Base title={title} description={description} article={{ published: date, modified: updated }} jsonLd={jsonLd}>
   <article class="prose">
-    <h1>{title}</h1>
-    <p class="lead">{description}</p>
-    <p style="color:var(--muted);font-size:.9rem">
-      Por <a href="/sobre-eneuros/">{TITULAR.nombre}</a> · Publicado el <time datetime={date.toISOString()}>{fmt.format(date)}</time>
-      {updated && <> · Actualizado el <time datetime={updated.toISOString()}>{fmt.format(updated)}</time></>}
-    </p>
+    <header class="art-cabecera" style={`--tema:${t.color};--tema-suave:${t.suave}`}>
+      <div class="art-texto">
+        <div class="art-chips">
+          <a class="tema-chip" href={seccion.href}>{seccion.icono} {seccion.nombre}</a>
+          <span class="tema-chip">{t.icono} {t.nombre}</span>
+          {minutos && <span class="tema-chip">⏱️ {minutos} min de lectura</span>}
+        </div>
+        <h1>{title}</h1>
+        <p class="lead">{description}</p>
+        <p class="art-autor">
+          ✍️ Por <a href="/sobre-eneuros/">{TITULAR.nombre}</a> · Publicado el <time datetime={date.toISOString()}>{fmt.format(date)}</time>
+          {updated && <> · Actualizado el <time datetime={updated.toISOString()}>{fmt.format(updated)}</time></>}
+        </p>
+      </div>
+      <span class="art-icono" aria-hidden="true">{t.icono}</span>
+    </header>
     <slot />
   </article>
   {calculadora && (
     <aside class="calc-cta prose">
-      <strong>Calculadora {calculadora.title}.</strong> {calculadora.desc}
-      <a class="btn" href={`/calculadoras/${calculadora.slug}/`}>Abrir la calculadora</a>
+      <span class="calc-cta-icono" aria-hidden="true">🧮</span>
+      <div>
+        <strong>Calculadora {calculadora.title}.</strong> {calculadora.desc}
+        <a class="btn" href={`/calculadoras/${calculadora.slug}/`}>Abrir la calculadora →</a>
+      </div>
     </aside>
   )}
   {relacionadas.length > 0 && (
     <section class="section prose">
-      <h2>Sigue leyendo</h2>
+      <h2>📚 Sigue leyendo</h2>
       <ArticleList items={relacionadas} base="/guias/" empty="" />
     </section>
   )}

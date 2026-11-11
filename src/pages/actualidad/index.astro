@@ -5,7 +5,12 @@ import { publicados } from '../../lib';
 const items = await publicados('actualidad');
 ---
 <Base title="Actualidad explicada" description="Las noticias económicas de España explicadas en euros: qué ha pasado y cómo te afecta.">
-  <h1>Actualidad explicada</h1>
-  <p class="lead">Las noticias económicas de España explicadas en euros: qué ha pasado y cómo te afecta.</p>
+  <header class="pagina-cabecera">
+    <span class="pagina-icono" aria-hidden="true">🗞️</span>
+    <div>
+      <h1>Actualidad explicada</h1>
+      <p class="lead">Las noticias económicas de España explicadas en euros: qué ha pasado y cómo te afecta.</p>
+    </div>
+  </header>
   <div class="section"><ArticleList items={items} base="/actualidad/" empty="Pronto publicaremos las primeras noticias explicadas." /></div>
 </Base>
