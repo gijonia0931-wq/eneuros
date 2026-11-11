@@ -1,4 +1,5 @@
 ---
+import { temaDe } from '../temas';
 interface Props {
   items: { id: string; data: { title: string; description: string; date: Date } }[];
   base: string;
@@ -11,12 +12,18 @@ const fmt = new Intl.DateTimeFormat('es-ES', { dateStyle: 'long' });
   <p class="empty">{empty}</p>
 ) : (
   <ul class="list">
-    {items.map((a) => (
-      <li>
-        <time datetime={a.data.date.toISOString()}>{fmt.format(a.data.date)}</time>
-        <a href={`${base}${a.id}/`}>{a.data.title}</a>
-        <p>{a.data.description}</p>
-      </li>
-    ))}
+    {items.map((a) => {
+      const t = temaDe(a.id, a.data.title);
+      return (
+        <li class="item" style={`--tema:${t.color};--tema-suave:${t.suave}`}>
+          <span class="item-icono" aria-hidden="true">{t.icono}</span>
+          <div class="item-texto">
+            <div class="item-meta"><span class="tema-chip">{t.nombre}</span><time datetime={a.data.date.toISOString()}>{fmt.format(a.data.date)}</time></div>
+            <a href={`${base}${a.id}/`}>{a.data.title}</a>
+            <p>{a.data.description}</p>
+          </div>
+        </li>
+      );
+    })}
   </ul>
 )}

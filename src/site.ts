@@ -6,10 +6,10 @@ export const SITE = {
 };
 
 export const NAV = [
-  { href: '/calculadoras/', label: 'Calculadoras' },
-  { href: '/datos/', label: 'Datos al día' },
-  { href: '/actualidad/', label: 'Actualidad' },
-  { href: '/guias/', label: 'Guías' },
+  { href: '/calculadoras/', label: 'Calculadoras', icono: '🧮' },
+  { href: '/datos/', label: 'Datos al día', icono: '📊' },
+  { href: '/actualidad/', label: 'Actualidad', icono: '🗞️' },
+  { href: '/guias/', label: 'Guías', icono: '📘' },
 ];
 
 // Google AdSense. Pon aquí tu ID de editor ("ca-pub-" y 16 cifras, lo ves en AdSense > Cuenta > Información de la cuenta).

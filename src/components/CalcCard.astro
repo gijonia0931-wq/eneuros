@@ -1,11 +1,19 @@
 ---
+import { temaDe } from '../temas';
 interface Props {
   calc: { slug: string; title: string; desc: string; disponible?: boolean };
 }
 const { calc } = Astro.props;
+const t = temaDe(calc.slug);
+const estilo = `--tema:${t.color};--tema-suave:${t.suave}`;
 ---
 {calc.disponible ? (
-  <a class="card" href={`/calculadoras/${calc.slug}/`}><span class="badge badge-ok">Calculadora</span><h3>{calc.title}</h3><p>{calc.desc}</p></a>
+  <a class="card card-tema" style={estilo} href={`/calculadoras/${calc.slug}/`}>
+    <span class="icono" aria-hidden="true">{t.icono}</span>
+    <h3>{calc.title}</h3>
+    <p>{calc.desc}</p>
+    <span class="card-accion">🧮 Calcular <span aria-hidden="true">→</span></span>
+  </a>
 ) : (
-  <div class="card"><span class="badge">Próximamente</span><h3>{calc.title}</h3><p>{calc.desc}</p></div>
+  <div class="card card-tema" style={estilo}><span class="icono" aria-hidden="true">{t.icono}</span><span class="badge">Próximamente</span><h3>{calc.title}</h3><p>{calc.desc}</p></div>
 )}
