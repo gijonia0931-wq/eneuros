@@ -1,0 +1,11 @@
+---
+import Base from '../../layouts/Base.astro';
+import ArticleList from '../../components/ArticleList.astro';
+import { publicados, MAX_NOTICIAS } from '../../lib';
+const items = (await publicados('actualidad')).slice(MAX_NOTICIAS);
+---
+<Base title="Archivo de noticias" description="Noticias económicas anteriores explicadas en euros.">
+  <h1>Archivo de noticias</h1>
+  <p class="lead">Noticias anteriores. Las más recientes están en <a href="/actualidad/">Actualidad explicada</a>.</p>
+  <div class="section"><ArticleList items={items} base="/actualidad/" empty="Todavía no hay noticias en el archivo." /></div>
+</Base>
