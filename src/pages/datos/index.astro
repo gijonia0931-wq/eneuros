@@ -11,12 +11,17 @@ import { DATOS } from '../../site';
       <p class="lead">Los indicadores que mueven tu economía, con el último dato oficial, de dónde sale y qué significa para tu bolsillo.</p>
     </div>
   </header>
+  <a class="card card-tema luz-hoy section" href="/datos/precio-luz-hoy/" style="--tema:#c8891b;--tema-suave:#fbf0dc">
+    <h3>⚡ Precio de la luz hoy, hora a hora</h3>
+    <p>El precio de la tarifa regulada (PVPC) para cada hora de hoy y de mañana, con gráficos. Se actualiza solo cada día con los datos de Red Eléctrica.</p>
+    <span class="card-accion">Ver el precio de hoy <span aria-hidden="true">→</span></span>
+  </a>
   <div class="grid section">
     {DATOS.map((d) => <DatoCard dato={d} />)}
   </div>
   <section class="section prose">
     <h2>Cada cuánto se actualizan</h2>
     <p>El Euríbor, el IPC y el índice de alquileres son datos mensuales: el Banco de España publica la media del Euríbor los primeros días de cada mes y el INE publica el IPC y el IRAV a mediados de mes. Los revisamos en cuanto salen y, cuando el dato cambia algo importante, lo explicamos en <a href="/actualidad/">Actualidad</a>.</p>
-    <p>El precio de la luz con tarifa regulada y el de los carburantes cambian a diario. Aquí recogemos una referencia reciente; para el precio de hoy consulta la <a href="https://www.ree.es/es/datos/mercados/precio-voluntario-pequeno-consumidor" rel="noopener">web de Red Eléctrica</a> o el <a href="https://geoportalgasolineras.es/" rel="noopener">Geoportal de gasolineras</a> del Ministerio.</p>
+    <p>El precio de la luz con tarifa regulada cambia cada hora: lo tienes al día, hora a hora, en <a href="/datos/precio-luz-hoy/">precio de la luz hoy</a>. El de los carburantes cambia a diario; aquí recogemos una referencia reciente y, para el precio de hoy en tu zona, consulta el <a href="https://geoportalgasolineras.es/" rel="noopener">Geoportal de gasolineras</a> del Ministerio.</p>
   </section>
 </Base>

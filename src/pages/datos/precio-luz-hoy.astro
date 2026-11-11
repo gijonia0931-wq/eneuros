@@ -1,0 +1,259 @@
+---
+import Base from '../../layouts/Base.astro';
+---
+<Base
+  title="Precio de la luz hoy por horas (PVPC)"
+  description="Precio de la luz hoy y mañana hora a hora con la tarifa regulada PVPC: hora más barata, más cara y precio medio, con gráficos. Datos oficiales de Red Eléctrica, actualizados cada día."
+>
+  <header class="pagina-cabecera">
+    <span class="pagina-icono" aria-hidden="true">⚡</span>
+    <div>
+      <h1>Precio de la luz hoy por horas</h1>
+      <p class="lead">El precio de la tarifa regulada (PVPC) para cada hora del día, con los datos oficiales de Red Eléctrica. Se actualiza solo: el precio de mañana aparece cada tarde, hacia las 20:30.</p>
+    </div>
+  </header>
+
+  <div class="luz section" id="luz">
+    <div class="luz-dias" role="tablist" aria-label="Día">
+      <button type="button" role="tab" data-dia="0" aria-selected="true">Hoy</button>
+      <button type="button" role="tab" data-dia="1" aria-selected="false">Mañana</button>
+    </div>
+    <p class="luz-fecha" data-out="fecha">Cargando los precios de Red Eléctrica…</p>
+
+    <p class="luz-aviso" data-out="aviso" hidden></p>
+
+    <div data-out="ok" hidden>
+      <div class="luz-resumen">
+        <div class="luz-dato" data-out="ahora-caja"><span>Ahora</span><strong data-out="ahora"></strong><small data-out="ahora-hora"></small></div>
+        <div class="luz-dato"><span>Precio medio</span><strong data-out="media"></strong><small>del día</small></div>
+        <div class="luz-dato luz-barato"><span>Hora más barata</span><strong data-out="min"></strong><small data-out="min-hora"></small></div>
+        <div class="luz-dato luz-caro"><span>Hora más cara</span><strong data-out="max"></strong><small data-out="max-hora"></small></div>
+      </div>
+
+      <h2 class="luz-titulo">Cómo cambia el precio a lo largo del día</h2>
+      <figure class="luz-grafico" data-out="linea" aria-label="Gráfico de líneas del precio de la luz por horas"></figure>
+
+      <h2 class="luz-titulo">Precio de cada hora</h2>
+      <p class="luz-leyenda">
+        <span><i class="l-barato"></i>Las 8 horas más baratas</span>
+        <span><i class="l-medio"></i>Precio intermedio</span>
+        <span><i class="l-caro"></i>Las 8 horas más caras</span>
+      </p>
+      <figure class="luz-grafico" data-out="barras" aria-label="Gráfico de barras del precio de la luz por horas"></figure>
+
+      <details class="luz-tabla">
+        <summary>Ver la tabla con todas las horas</summary>
+        <table>
+          <thead><tr><th>Hora</th><th>€/kWh</th></tr></thead>
+          <tbody data-out="tabla"></tbody>
+        </table>
+      </details>
+      <p class="dato-fuente">📊 Fuente: Red Eléctrica (REE), término de energía del PVPC 2.0TD. Precios en euros por kWh, sin impuestos (impuesto eléctrico e IVA aparte) y sin la parte fija de la potencia.</p>
+    </div>
+  </div>
+
+  <section class="section prose">
+    <h2>Qué es este precio</h2>
+    <p>Si tienes la tarifa regulada de la luz (PVPC), lo que pagas por cada kWh cambia cada hora. Red Eléctrica publica cada tarde los precios del día siguiente, y esta página los recoge automáticamente. El precio ya incluye los peajes y cargos del sistema; en tu factura se le suman la potencia contratada, el impuesto eléctrico, el alquiler del contador y el IVA.</p>
+    <p>Si tienes una tarifa del mercado libre con precio fijo, estos precios no te afectan directamente: pagas lo que diga tu contrato. Aun así, sirven para comparar. Te lo explicamos en <a href="/guias/pvpc-o-mercado-libre/">PVPC o mercado libre</a>.</p>
+    <h2>Cómo ahorrar con el precio por horas</h2>
+    <p>Pon la lavadora, el lavavajillas o la carga del coche eléctrico en las horas verdes del gráfico de barras. Suelen ser las de madrugada y, los días soleados, las del mediodía, cuando hay mucha energía solar. Las horas rojas suelen ser las de la tarde y la noche, cuando todo el mundo llega a casa. Tienes más detalles en la guía de <a href="/guias/tramos-horarios-luz/">tramos horarios de la luz</a>.</p>
+    <p>Para saber cuánto te costará el mes, usa la <a href="/calculadoras/factura-luz/">calculadora de la factura de la luz</a>.</p>
+  </section>
+</Base>
+
+<style>
+  .luz { background: var(--surface); border-radius: var(--radius); box-shadow: var(--sombra); padding: 20px; }
+  .luz-dias { display: inline-flex; gap: 4px; padding: 4px; background: var(--bg); border: 1px solid var(--line); border-radius: 999px; }
+  .luz-dias button { font: inherit; font-weight: 600; border: 0; background: transparent; color: var(--muted); padding: 6px 18px; border-radius: 999px; cursor: pointer; }
+  .luz-dias button[aria-selected='true'] { background: var(--brand); color: #fff; }
+  .luz-fecha { color: var(--muted); margin: 10px 0 16px; }
+  .luz-aviso { background: #fff7e6; border: 1px solid #f0d49a; border-radius: 8px; padding: 12px 14px; }
+  .luz-resumen { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+  .luz-dato { background: var(--bg); border-radius: 10px; padding: 12px 14px; display: flex; flex-direction: column; border-top: 4px solid var(--brand); }
+  .luz-dato span { color: var(--muted); font-size: .9rem; }
+  .luz-dato strong { font: 700 1.6rem/1.2 var(--serif); color: var(--brand); }
+  .luz-dato small { color: var(--muted); }
+  .luz-barato { border-top-color: #1d7a52; }
+  .luz-barato strong { color: #1d7a52; }
+  .luz-caro { border-top-color: #b42318; }
+  .luz-caro strong { color: #b42318; }
+  .luz-titulo { font-size: 1.15rem; margin: 28px 0 8px; }
+  .luz-grafico { margin: 0; width: 100%; }
+  .luz-grafico :global(svg) { display: block; width: 100%; height: auto; }
+  .luz-leyenda { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: .88rem; color: var(--muted); margin: 0 0 6px; }
+  .luz-leyenda i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+  .l-barato { background: #1d7a52; }
+  .l-medio { background: #c8891b; }
+  .l-caro { background: #b42318; }
+  .luz-tabla { margin: 20px 0 0; }
+  .luz-tabla summary { cursor: pointer; font-weight: 600; color: var(--brand); }
+  .luz-tabla table { border-collapse: collapse; margin-top: 10px; min-width: 220px; }
+  .luz-tabla th, .luz-tabla td { text-align: left; padding: 4px 16px 4px 0; border-bottom: 1px solid var(--line); font-variant-numeric: tabular-nums; }
+  .luz .dato-fuente { margin-top: 16px; font-size: .82rem; color: var(--muted); }
+</style>
+
+<script>
+  type Hora = { h: number; etiqueta: string; precio: number };
+
+  const API = 'https://apidatos.ree.es/es/datos/mercados/precios-mercados-tiempo-real';
+  const ZONA = 'Europe/Madrid';
+  const COLOR = { barato: '#1d7a52', medio: '#c8891b', caro: '#b42318', linea: '#0f5132', rejilla: '#e4e1d9', texto: '#5b6662' };
+
+  const out = (n: string) => document.querySelector(`[data-out="${n}"]`) as HTMLElement;
+  const kwh = (n: number, d = 3) => n.toLocaleString('es-ES', { minimumFractionDigits: d, maximumFractionDigits: d });
+  const rango = (h: Hora) => `de ${h.etiqueta} a ${String((h.h + 1) % 24).padStart(2, '0')}:00`;
+
+  // Fecha (AAAA-MM-DD) en hora peninsular, sumando días a hoy.
+  function fechaMadrid(masDias: number) {
+    const hoy = new Intl.DateTimeFormat('en-CA', { timeZone: ZONA, year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
+    const d = new Date(`${hoy}T12:00:00Z`);
+    d.setUTCDate(d.getUTCDate() + masDias);
+    return d.toISOString().slice(0, 10);
+  }
+  const horaMadrid = () => Number(new Intl.DateTimeFormat('es-ES', { timeZone: ZONA, hour: '2-digit', hourCycle: 'h23' }).format(new Date()));
+  const fechaLarga = (f: string) => new Date(`${f}T12:00:00Z`).toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+
+  const cache = new Map<string, Hora[] | null>();
+  async function cargar(fecha: string): Promise<Hora[] | null> {
+    if (cache.has(fecha)) return cache.get(fecha)!;
+    const url = `${API}?start_date=${fecha}T00:00&end_date=${fecha}T23:59&time_trunc=hour`;
+    const r = await fetch(url);
+    if (!r.ok) {
+      // Red Eléctrica responde con error cuando aún no hay datos de ese día.
+      cache.set(fecha, null);
+      return null;
+    }
+    const j = await r.json();
+    const pvpc = (j.included || []).find((i: any) => i.type === 'PVPC' || i.id === '1001');
+    const valores: { value: number; datetime: string }[] = pvpc?.attributes?.values || [];
+    const horas = valores
+      .filter((v) => v.datetime.startsWith(fecha))
+      .map((v) => {
+        const etiqueta = v.datetime.slice(11, 16);
+        return { h: Number(etiqueta.slice(0, 2)), etiqueta, precio: v.value / 1000 };
+      });
+    const res = horas.length ? horas : null;
+    cache.set(fecha, res);
+    return res;
+  }
+
+  // Las 8 horas más baratas en verde, las 8 más caras en rojo y el resto en ámbar.
+  function colores(horas: Hora[]) {
+    const orden = [...horas].sort((a, b) => a.precio - b.precio);
+    const tercio = Math.round(horas.length / 3);
+    const barato = new Set(orden.slice(0, tercio));
+    const caro = new Set(orden.slice(-tercio));
+    return (h: Hora) => (barato.has(h) ? COLOR.barato : caro.has(h) ? COLOR.caro : COLOR.medio);
+  }
+
+  function ejes(horas: Hora[]) {
+    // En el móvil el gráfico es más estrecho para que los números se lean bien.
+    const W = Math.round(Math.max(320, Math.min(720, out('linea').clientWidth || 720)));
+    const H = W < 500 ? 240 : 290, izq = 46, der = 12, arr = 30, abj = 30;
+    const max = Math.max(...horas.map((h) => h.precio));
+    // Escala con números redondos (0,05 / 0,10 / 0,20...) y 3-6 líneas de rejilla.
+    const salto = [0.01, 0.02, 0.025, 0.05, 0.1, 0.2, 0.25, 0.5].find((v) => (max * 1.05) / v <= 6) ?? 1;
+    const tope = Math.ceil((max * 1.05) / salto) * salto;
+    const y = (p: number) => arr + (H - arr - abj) * (1 - p / tope);
+    const paso = (W - izq - der) / horas.length;
+    const x = (i: number) => izq + paso * (i + 0.5);
+    let svg = '';
+    for (let k = 0; k * salto <= tope + 1e-9; k++) {
+      const p = k * salto;
+      svg += `<line x1="${izq}" x2="${W - der}" y1="${y(p)}" y2="${y(p)}" stroke="${COLOR.rejilla}"/>`;
+      svg += `<text x="${izq - 6}" y="${y(p) + 4}" text-anchor="end" font-size="11" fill="${COLOR.texto}">${kwh(p, 2)}</text>`;
+    }
+    horas.forEach((h, i) => {
+      const cada = W < 500 ? 3 : 2;
+      if (i % cada === 0 || horas.length < 13) svg += `<text x="${x(i)}" y="${H - 10}" text-anchor="middle" font-size="11" fill="${COLOR.texto}">${h.etiqueta.slice(0, 2)}h</text>`;
+    });
+    svg += `<text x="4" y="12" font-size="11" fill="${COLOR.texto}">€/kWh</text>`;
+    return { W, H, y, x, paso, base: y(0), svg };
+  }
+
+  function lineas(horas: Hora[], ahora: number | null) {
+    const e = ejes(horas);
+    const puntos = horas.map((h, i) => `${e.x(i)},${e.y(h.precio)}`).join(' ');
+    let svg = e.svg;
+    svg += `<polygon points="${e.x(0)},${e.base} ${puntos} ${e.x(horas.length - 1)},${e.base}" fill="${COLOR.linea}" fill-opacity=".08"/>`;
+    svg += `<polyline points="${puntos}" fill="none" stroke="${COLOR.linea}" stroke-width="2.5" stroke-linejoin="round"/>`;
+    horas.forEach((h, i) => {
+      const actual = ahora === i;
+      svg += `<circle cx="${e.x(i)}" cy="${e.y(h.precio)}" r="${actual ? 6 : 3.5}" fill="${actual ? COLOR.caro : COLOR.linea}" stroke="#fff" stroke-width="1.5"><title>${rango(h)}: ${kwh(h.precio)} €/kWh</title></circle>`;
+    });
+    if (ahora !== null) svg += `<text x="${e.x(ahora)}" y="${e.y(horas[ahora].precio) - 12}" text-anchor="middle" font-size="12" font-weight="700" fill="${COLOR.caro}">Ahora</text>`;
+    return `<svg viewBox="0 0 ${e.W} ${e.H}" role="img">${svg}</svg>`;
+  }
+
+  function barras(horas: Hora[], ahora: number | null) {
+    const e = ejes(horas);
+    const color = colores(horas);
+    let svg = e.svg;
+    horas.forEach((h, i) => {
+      const ancho = e.paso * 0.72;
+      const top = e.y(h.precio);
+      svg += `<rect x="${e.x(i) - ancho / 2}" y="${top}" width="${ancho}" height="${e.base - top}" rx="3" fill="${color(h)}"${ahora === i ? ` stroke="#1c2321" stroke-width="2"` : ''}><title>${rango(h)}: ${kwh(h.precio)} €/kWh</title></rect>`;
+    });
+    return `<svg viewBox="0 0 ${e.W} ${e.H}" role="img">${svg}</svg>`;
+  }
+
+  let pedido = 0;
+  async function mostrar(dia: number) {
+    const mio = ++pedido;
+    document.querySelectorAll<HTMLButtonElement>('.luz-dias button').forEach((b) => b.setAttribute('aria-selected', String(Number(b.dataset.dia) === dia)));
+    const fecha = fechaMadrid(dia);
+    out('fecha').textContent = `Precios del ${fechaLarga(fecha)} (hora peninsular).`;
+    let horas: Hora[] | null = null;
+    let fallo = false;
+    try {
+      horas = await cargar(fecha);
+    } catch {
+      fallo = true;
+    }
+    if (mio !== pedido) return;
+    if (!horas) {
+      out('ok').hidden = true;
+      out('aviso').hidden = false;
+      out('aviso').innerHTML = fallo
+        ? 'No hemos podido conectar con Red Eléctrica. Prueba a recargar la página en un momento o consulta los precios en la <a href="https://www.ree.es/es/datos/mercados/precio-voluntario-pequeno-consumidor" rel="noopener">web de Red Eléctrica</a>.'
+        : dia === 1
+          ? 'Los precios de mañana todavía no están publicados. Red Eléctrica los publica cada tarde, normalmente hacia las 20:30. Vuelve un poco más tarde.'
+          : 'Todavía no hay precios para este día. Prueba a recargar la página en un momento.';
+      return;
+    }
+    out('aviso').hidden = true;
+    out('ok').hidden = false;
+
+    const media = horas.reduce((s, h) => s + h.precio, 0) / horas.length;
+    const min = horas.reduce((a, b) => (b.precio < a.precio ? b : a));
+    const max = horas.reduce((a, b) => (b.precio > a.precio ? b : a));
+    const iAhora = dia === 0 ? horas.findIndex((h) => h.h === horaMadrid()) : -1;
+    const ahora = iAhora >= 0 ? iAhora : null;
+
+    out('ahora-caja').hidden = ahora === null;
+    if (ahora !== null) {
+      out('ahora').textContent = `${kwh(horas[ahora].precio)} €`;
+      out('ahora-hora').textContent = `por kWh, ${rango(horas[ahora])}`;
+    }
+    out('media').textContent = `${kwh(media)} €`;
+    out('min').textContent = `${kwh(min.precio)} €`;
+    out('min-hora').textContent = rango(min);
+    out('max').textContent = `${kwh(max.precio)} €`;
+    out('max-hora').textContent = rango(max);
+    out('linea').innerHTML = lineas(horas, ahora);
+    out('barras').innerHTML = barras(horas, ahora);
+    out('tabla').innerHTML = horas.map((h) => `<tr><td>${rango(h)}</td><td>${kwh(h.precio)}</td></tr>`).join('');
+  }
+
+  let diaActual = 0;
+  document.querySelectorAll<HTMLButtonElement>('.luz-dias button').forEach((b) => b.addEventListener('click', () => mostrar((diaActual = Number(b.dataset.dia)))));
+  // Al girar el móvil o cambiar el tamaño de la ventana, se redibujan los gráficos.
+  let ancho = window.innerWidth;
+  window.addEventListener('resize', () => {
+    if (Math.abs(window.innerWidth - ancho) < 60) return;
+    ancho = window.innerWidth;
+    mostrar(diaActual);
+  });
+  mostrar(0);
+</script>
