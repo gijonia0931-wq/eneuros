@@ -60,7 +60,7 @@ Si se aprueba en noviembre, en la primera nómina de 2027. Si se retrasara, lo n
 Te corresponde la mitad: 643 euros brutos al mes en 14 pagas.
 
 **¿Es ya seguro que serán 1.286 euros?**
-No. Es la cifra del borrador, que puede cambiar tras las alegaciones o no llegar a aprobarse antes de las elecciones. Actualizaremos este artículo cuando salga en el BOE.
+Ya sí. El Gobierno lo aprobó el 17 de noviembre y el BOE lo publicó el 19 con la misma cifra. Lo contamos en [el salario mínimo de 2027 ya es oficial](/actualidad/salario-minimo-2027-boe/).
 
 ## Fuentes
 
