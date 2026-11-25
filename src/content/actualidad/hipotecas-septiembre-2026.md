@@ -79,9 +79,6 @@ Si es fija, no: tu cuota no cambia. Si es variable, lo que manda en tu revisión
 **¿El 3,05 % es lo que me van a ofrecer a mí?**
 No necesariamente. Es la media de todas las hipotecas inscritas en septiembre, fijas y variables. Tu oferta dependerá de tu perfil, del plazo, del porcentaje del valor de la casa que pidas y de los productos vinculados. Compara siempre la TAE, no solo el TIN; lo explicamos en [TIN y TAE](/guias/tin-y-tae-diferencias/).
 
-**¿Cuánto necesito ahorrado para comprar?**
-Además de la entrada (los bancos suelen financiar como mucho el 80 % del valor de tasación), hay que sumar impuestos, notaría y registro. Lo tienes desglosado en [gastos de comprar una vivienda](/guias/gastos-de-comprar-una-vivienda/).
-
 ## En resumen
 
 - El INE publicó el 25 de noviembre de 2026 la estadística de hipotecas de septiembre: **46.469 hipotecas sobre viviendas** (+2,3 % anual), la cifra más alta para un septiembre desde 2010.
